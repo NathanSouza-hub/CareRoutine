@@ -130,6 +130,38 @@
           </div>
         </form>
       </section>
+
+      <section class="history-panel container" aria-labelledby="history-title">
+        <div class="history-panel__header">
+          <div>
+            <p class="eyebrow">Acompanhamento</p>
+            <h2 id="history-title">Histórico de registros</h2>
+          </div>
+          <p id="records-count" class="records-count"></p>
+        </div>
+
+        <p id="empty-history" class="empty-history">
+          Nenhum sinal vital foi registrado neste navegador.
+        </p>
+
+        <div id="history-table-wrapper" class="table-wrapper" hidden>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Data e hora</th>
+                <th scope="col">Turno</th>
+                <th scope="col">PA</th>
+                <th scope="col">FC</th>
+                <th scope="col">Saturação</th>
+                <th scope="col">Temperatura</th>
+                <th scope="col">Glicemia</th>
+                <th scope="col">Observações</th>
+              </tr>
+            </thead>
+            <tbody id="vitals-history"></tbody>
+          </table>
+        </div>
+      </section>
     </main>
 
     <footer>
