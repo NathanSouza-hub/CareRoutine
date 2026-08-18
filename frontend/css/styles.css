@@ -311,6 +311,22 @@ footer p {
   background: var(--primary-dark);
 }
 
+.secondary-button {
+  padding: 11px 18px;
+  color: var(--primary-dark);
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  background: var(--accent);
+}
+
 .form-message {
   margin: 0;
   color: var(--primary-dark);
@@ -354,6 +370,17 @@ footer p {
   text-align: center;
 }
 
+.history-filters {
+  margin-bottom: 24px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr)) auto;
+  align-items: end;
+  gap: 14px;
+  background: var(--background);
+  border-radius: 10px;
+}
+
 .table-wrapper {
   overflow-x: auto;
 }
@@ -381,7 +408,7 @@ th {
   text-transform: uppercase;
 }
 
-td:last-child {
+td:nth-child(8) {
   min-width: 220px;
   max-width: 320px;
   white-space: normal;
@@ -389,6 +416,31 @@ td:last-child {
 
 tbody tr:last-child td {
   border-bottom: 0;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.table-action {
+  padding: 7px 10px;
+  color: var(--primary-dark);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.table-action:hover,
+.table-action:focus-visible {
+  background: var(--accent);
+}
+
+.table-action--danger {
+  color: #9b2c2c;
 }
 
 @media (max-width: 760px) {
@@ -423,6 +475,10 @@ tbody tr:last-child td {
   .history-panel__header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .history-filters {
+    grid-template-columns: 1fr;
   }
 
   .form-grid {

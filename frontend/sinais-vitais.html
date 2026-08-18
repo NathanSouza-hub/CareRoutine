@@ -125,7 +125,12 @@
           </div>
 
           <div class="form-actions">
-            <button class="primary-button" type="submit">Registrar sinais vitais</button>
+            <button class="primary-button" id="submit-button" type="submit">
+              Registrar sinais vitais
+            </button>
+            <button class="secondary-button" id="cancel-edit-button" type="button" hidden>
+              Cancelar edição
+            </button>
             <p class="form-message" id="form-message" aria-live="polite"></p>
           </div>
         </form>
@@ -139,6 +144,30 @@
           </div>
           <p id="records-count" class="records-count"></p>
         </div>
+
+        <form class="history-filters" id="history-filters">
+          <div class="form-field">
+            <label for="filter-start-date">Data inicial</label>
+            <input id="filter-start-date" name="startDate" type="date" />
+          </div>
+          <div class="form-field">
+            <label for="filter-end-date">Data final</label>
+            <input id="filter-end-date" name="endDate" type="date" />
+          </div>
+          <div class="form-field">
+            <label for="filter-shift">Turno</label>
+            <select id="filter-shift" name="shift">
+              <option value="">Todos</option>
+              <option value="Manhã">Manhã</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noite">Noite</option>
+              <option value="Madrugada">Madrugada</option>
+            </select>
+          </div>
+          <button class="secondary-button" id="clear-filters-button" type="button">
+            Limpar filtros
+          </button>
+        </form>
 
         <p id="empty-history" class="empty-history">
           Nenhum sinal vital foi registrado neste navegador.
@@ -156,6 +185,7 @@
                 <th scope="col">Temperatura</th>
                 <th scope="col">Glicemia</th>
                 <th scope="col">Observações</th>
+                <th scope="col">Ações</th>
               </tr>
             </thead>
             <tbody id="vitals-history"></tbody>
@@ -170,6 +200,7 @@
       </div>
     </footer>
 
+    <script src="js/vitals-repository.js"></script>
     <script src="js/vitals.js"></script>
   </body>
 </html>
