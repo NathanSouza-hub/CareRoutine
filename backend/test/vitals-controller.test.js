@@ -15,6 +15,9 @@ function createResponse() {
       this.body = body;
       return this;
     },
+    send() {
+      return this;
+    },
   };
 }
 
@@ -64,5 +67,53 @@ describe("vitals controller", () => {
 
     assert.equal(forwardedError, unexpectedError);
     assert.equal(response.statusCode, null);
+  });
+
+  it("retorna 200 com a lista de registros", async () => {
+    const records = [{ id: "1" }];
+    const controller = createVitalsController({ getAll: async () => records });
+    const response = createResponse();
+
+    await controller.getAll({}, response, assert.fail);
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.body, { data: records });
+  });
+
+  it("retorna 200 com o registro atualizado", async () => {
+    const record = { id: "1", heartRate: 80 };
+    const controller = createVitalsController({ update: async () => record });
+    const response = createResponse();
+
+    await controller.update({ params: { id: "1" }, body: {} }, response, assert.fail);
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.body, { data: record });
+  });
+
+  it("retorna 204 ao remover o registro", async () => {
+    const controller = createVitalsController({ remove: async () => undefined });
+    const response = createResponse();
+
+    await controller.remove({ params: { id: "1" } }, response, assert.fail);
+
+    assert.equal(response.statusCode, 204);
+    assert.equal(response.body, null);
+  });
+
+  it("retorna 404 quando o registro não existe", async () => {
+    const controller = createVitalsController({
+      update: async () => {
+        throw new (require("../src/errors/not-found-error"))();
+      },
+    });
+    const response = createResponse();
+
+    await controller.update({ params: { id: "999" }, body: {} }, response, assert.fail);
+
+    assert.equal(response.statusCode, 404);
+    assert.deepEqual(response.body, {
+      error: "Registro de sinais vitais não encontrado",
+    });
   });
 });

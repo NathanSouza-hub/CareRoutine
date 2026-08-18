@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const { describe, it } = require("node:test");
 const ValidationError = require("../src/errors/validation-error");
+const NotFoundError = require("../src/errors/not-found-error");
 const createVitalsService = require("../src/services/vitals-service");
 
 function validInput(overrides = {}) {
@@ -60,6 +61,33 @@ describe("vitals service", () => {
     assert.equal(receivedData.notes, null);
   });
 
+  it("aceita um registro sem nenhuma medição", async () => {
+    let receivedData;
+    const service = createVitalsService({
+      async create(data) {
+        receivedData = data;
+        return data;
+      },
+    });
+
+    await service.create(
+      validInput({
+        bloodPressure: "",
+        heartRate: "",
+        oxygenSaturation: "",
+        temperature: "",
+        bloodGlucose: "",
+      }),
+    );
+
+    assert.equal(receivedData.systolicPressure, null);
+    assert.equal(receivedData.diastolicPressure, null);
+    assert.equal(receivedData.heartRate, null);
+    assert.equal(receivedData.oxygenSaturation, null);
+    assert.equal(receivedData.temperature, null);
+    assert.equal(receivedData.bloodGlucose, null);
+  });
+
   it("rejeita campos obrigatórios e formatos inválidos", async () => {
     const service = createVitalsService({ create: async () => assert.fail() });
 
@@ -89,5 +117,59 @@ describe("vitals service", () => {
         return true;
       },
     );
+  });
+
+  it("lista os registros fornecidos pelo repositório", async () => {
+    const records = [{ id: "2" }, { id: "1" }];
+    const service = createVitalsService({ getAll: async () => records });
+
+    assert.equal(await service.getAll(), records);
+  });
+
+  it("atualiza um registro válido", async () => {
+    let receivedId;
+    const service = createVitalsService({
+      async update(id, data) {
+        receivedId = id;
+        return { id, ...data };
+      },
+    });
+
+    const result = await service.update("12", validInput());
+
+    assert.equal(receivedId, "12");
+    assert.equal(result.systolicPressure, 120);
+  });
+
+  it("retorna erro quando o registro atualizado não existe", async () => {
+    const service = createVitalsService({ update: async () => null });
+
+    await assert.rejects(service.update("999", validInput()), NotFoundError);
+  });
+
+  it("remove um registro existente", async () => {
+    let receivedId;
+    const service = createVitalsService({
+      async remove(id) {
+        receivedId = id;
+        return true;
+      },
+    });
+
+    await service.remove("12");
+
+    assert.equal(receivedId, "12");
+  });
+
+  it("rejeita identificador inválido sem consultar o repositório", async () => {
+    const service = createVitalsService({ remove: async () => assert.fail() });
+
+    await assert.rejects(service.remove("abc"), ValidationError);
+  });
+
+  it("retorna erro quando o registro removido não existe", async () => {
+    const service = createVitalsService({ remove: async () => false });
+
+    await assert.rejects(service.remove("999"), NotFoundError);
   });
 });

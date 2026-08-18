@@ -14,6 +14,7 @@ const filtersForm = document.querySelector("#history-filters");
 const clearFiltersButton = document.querySelector("#clear-filters-button");
 
 let editingRecordId = null;
+let records = [];
 
 function selectShiftFromHour(hour) {
   if (hour >= 6 && hour < 12) return "Manhã";
@@ -52,7 +53,7 @@ function createCell(value) {
 function getFilteredRecords() {
   const filters = Object.fromEntries(new FormData(filtersForm).entries());
 
-  return VitalsRepository.getAll()
+  return records
     .filter((record) => !filters.startDate || record.date >= filters.startDate)
     .filter((record) => !filters.endDate || record.date <= filters.endDate)
     .filter((record) => !filters.shift || record.shift === filters.shift)
@@ -86,14 +87,13 @@ function createActionsCell(recordId) {
 }
 
 function renderHistory() {
-  const allRecords = VitalsRepository.getAll();
   const filteredRecords = getFilteredRecords();
 
   historyBody.replaceChildren();
-  recordsCount.textContent = `${filteredRecords.length} de ${allRecords.length} ${allRecords.length === 1 ? "registro" : "registros"}`;
-  emptyHistory.textContent = allRecords.length
+  recordsCount.textContent = `${filteredRecords.length} de ${records.length} ${records.length === 1 ? "registro" : "registros"}`;
+  emptyHistory.textContent = records.length
     ? "Nenhum registro corresponde aos filtros selecionados."
-    : "Nenhum sinal vital foi registrado neste navegador.";
+    : "Nenhum sinal vital foi registrado.";
   emptyHistory.hidden = filteredRecords.length > 0;
   historyTableWrapper.hidden = filteredRecords.length === 0;
 
@@ -103,9 +103,9 @@ function renderHistory() {
       createCell(formatDateTime(record.date, record.time)),
       createCell(record.shift),
       createCell(record.bloodPressure),
-      createCell(`${record.heartRate} bpm`),
-      createCell(`${record.oxygenSaturation}%`),
-      createCell(`${record.temperature} °C`),
+      createCell(record.heartRate ? `${record.heartRate} bpm` : "—"),
+      createCell(record.oxygenSaturation ? `${record.oxygenSaturation}%` : "—"),
+      createCell(record.temperature ? `${record.temperature} °C` : "—"),
       createCell(record.bloodGlucose ? `${record.bloodGlucose} mg/dL` : "—"),
       createCell(record.notes),
       createActionsCell(record.id),
@@ -124,7 +124,7 @@ function finishEditing(message = "") {
 }
 
 function startEditing(recordId) {
-  const record = VitalsRepository.findById(recordId);
+  const record = records.find((item) => item.id === recordId);
   if (!record) return;
 
   editingRecordId = recordId;
@@ -139,19 +139,28 @@ function startEditing(recordId) {
   vitalsForm.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-vitalsForm.addEventListener("submit", (event) => {
+vitalsForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const record = Object.fromEntries(new FormData(vitalsForm).entries());
+  submitButton.disabled = true;
+  formMessage.textContent = "Salvando...";
 
-  if (editingRecordId) {
-    VitalsRepository.update(editingRecordId, record);
-    finishEditing("Registro atualizado com sucesso.");
-  } else {
-    VitalsRepository.create(record);
-    finishEditing("Sinais vitais registrados com sucesso.");
+  try {
+    if (editingRecordId) {
+      await VitalsRepository.update(editingRecordId, record);
+      finishEditing("Registro atualizado com sucesso.");
+    } else {
+      await VitalsRepository.create(record);
+      finishEditing("Sinais vitais registrados com sucesso.");
+    }
+
+    records = await VitalsRepository.getAll();
+    renderHistory();
+  } catch (error) {
+    formMessage.textContent = error.message;
+  } finally {
+    submitButton.disabled = false;
   }
-
-  renderHistory();
 });
 
 cancelEditButton.addEventListener("click", () => finishEditing());
@@ -162,7 +171,7 @@ clearFiltersButton.addEventListener("click", () => {
   renderHistory();
 });
 
-historyBody.addEventListener("click", (event) => {
+historyBody.addEventListener("click", async (event) => {
   const actionButton = event.target.closest("[data-action]");
   if (!actionButton) return;
 
@@ -174,15 +183,33 @@ historyBody.addEventListener("click", (event) => {
   }
 
   if (action === "delete" && window.confirm("Deseja excluir este registro?")) {
-    VitalsRepository.remove(id);
-    if (editingRecordId === id) finishEditing();
-    renderHistory();
+    try {
+      await VitalsRepository.remove(id);
+      records = records.filter((record) => record.id !== id);
+      if (editingRecordId === id) finishEditing();
+      renderHistory();
+    } catch (error) {
+      formMessage.textContent = error.message;
+    }
   }
 });
+
+async function loadHistory() {
+  try {
+    records = await VitalsRepository.getAll();
+    renderHistory();
+  } catch (error) {
+    emptyHistory.textContent =
+      "Não foi possível carregar o histórico. Verifique se a API está ativa.";
+    emptyHistory.hidden = false;
+    historyTableWrapper.hidden = true;
+    formMessage.textContent = error.message;
+  }
+}
 
 currentDateElement.textContent = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "full",
 }).format(new Date());
 
 fillCurrentDateTime();
-renderHistory();
+loadHistory();

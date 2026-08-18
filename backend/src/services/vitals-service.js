@@ -1,4 +1,5 @@
 const ValidationError = require("../errors/validation-error");
+const NotFoundError = require("../errors/not-found-error");
 
 const VALID_SHIFTS = new Set(["Manhã", "Tarde", "Noite", "Madrugada"]);
 
@@ -31,6 +32,14 @@ function parseNumber(value, field, details, { integer = false, min, max }) {
   return parsedValue;
 }
 
+function hasValue(value) {
+  return value !== undefined && value !== null && String(value).trim() !== "";
+}
+
+function parseOptionalNumber(value, field, details, rules) {
+  return hasValue(value) ? parseNumber(value, field, details, rules) : null;
+}
+
 function validateAndMap(input) {
   const details = {};
   const date = typeof input.date === "string" ? input.date.trim() : "";
@@ -46,28 +55,28 @@ function validateAndMap(input) {
   if (!VALID_SHIFTS.has(shift)) details.shift = "Informe um turno válido";
 
   const pressureMatch = /^(\d{2,3})\/(\d{2,3})$/.exec(bloodPressure);
-  if (!pressureMatch) {
+  if (bloodPressure && !pressureMatch) {
     details.bloodPressure = "Informe a pressão no formato 120/80";
   }
 
-  const heartRate = parseNumber(input.heartRate, "heartRate", details, {
+  const heartRate = parseOptionalNumber(input.heartRate, "heartRate", details, {
     integer: true,
     min: 1,
     max: 300,
   });
-  const oxygenSaturation = parseNumber(
+  const oxygenSaturation = parseOptionalNumber(
     input.oxygenSaturation,
     "oxygenSaturation",
     details,
     { integer: true, min: 1, max: 100 },
   );
-  const temperature = parseNumber(input.temperature, "temperature", details, {
+  const temperature = parseOptionalNumber(input.temperature, "temperature", details, {
     min: 30,
     max: 45,
   });
 
   let bloodGlucose = null;
-  if (input.bloodGlucose !== undefined && input.bloodGlucose !== null && input.bloodGlucose !== "") {
+  if (hasValue(input.bloodGlucose)) {
     bloodGlucose = parseNumber(input.bloodGlucose, "bloodGlucose", details, {
       integer: true,
       min: 1,
@@ -83,8 +92,8 @@ function validateAndMap(input) {
   return {
     measuredAt: `${date}T${time}:00`,
     shift,
-    systolicPressure: Number(pressureMatch[1]),
-    diastolicPressure: Number(pressureMatch[2]),
+    systolicPressure: pressureMatch ? Number(pressureMatch[1]) : null,
+    diastolicPressure: pressureMatch ? Number(pressureMatch[2]) : null,
     heartRate,
     oxygenSaturation,
     temperature,
@@ -94,11 +103,34 @@ function validateAndMap(input) {
 }
 
 function createVitalsService(repository) {
+  function validateId(id) {
+    if (!/^\d+$/.test(id) || id === "0") {
+      throw new ValidationError({ id: "Informe um identificador válido" });
+    }
+  }
+
   async function create(input) {
     return repository.create(validateAndMap(input ?? {}));
   }
 
-  return Object.freeze({ create });
+  async function getAll() {
+    return repository.getAll();
+  }
+
+  async function update(id, input) {
+    validateId(id);
+    const updatedRecord = await repository.update(id, validateAndMap(input ?? {}));
+    if (!updatedRecord) throw new NotFoundError();
+    return updatedRecord;
+  }
+
+  async function remove(id) {
+    validateId(id);
+    const removed = await repository.remove(id);
+    if (!removed) throw new NotFoundError();
+  }
+
+  return Object.freeze({ create, getAll, remove, update });
 }
 
 module.exports = createVitalsService;

@@ -1,54 +1,73 @@
 const VitalsRepository = (() => {
-  const STORAGE_KEY = "careRoutine:vitals";
+  const API_URL = "http://localhost:3000/api/vitals";
 
-  function createId() {
-    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  function toLocalRecord(record) {
+    const measuredAt = new Date(record.measuredAt);
+
+    return {
+      id: String(record.id),
+      date: [
+        measuredAt.getFullYear(),
+        String(measuredAt.getMonth() + 1).padStart(2, "0"),
+        String(measuredAt.getDate()).padStart(2, "0"),
+      ].join("-"),
+      time: [
+        String(measuredAt.getHours()).padStart(2, "0"),
+        String(measuredAt.getMinutes()).padStart(2, "0"),
+      ].join(":"),
+      shift: record.shift,
+      bloodPressure:
+        record.systolicPressure == null
+          ? ""
+          : `${record.systolicPressure}/${record.diastolicPressure}`,
+      heartRate: record.heartRate ?? "",
+      oxygenSaturation: record.oxygenSaturation ?? "",
+      temperature: record.temperature ?? "",
+      bloodGlucose: record.bloodGlucose ?? "",
+      notes: record.notes ?? "",
+    };
   }
 
-  function write(records) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  }
+  async function request(url, options = {}) {
+    const response = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
 
-  function getAll() {
-    const storedRecords = localStorage.getItem(STORAGE_KEY);
-    if (!storedRecords) return [];
-
-    try {
-      const parsedRecords = JSON.parse(storedRecords);
-      if (!Array.isArray(parsedRecords)) return [];
-
-      const migratedRecords = parsedRecords.map((record) => ({
-        ...record,
-        id: record.id || createId(),
-      }));
-
-      if (migratedRecords.some((record, index) => record.id !== parsedRecords[index].id)) {
-        write(migratedRecords);
-      }
-
-      return migratedRecords;
-    } catch {
-      return [];
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const detail = body.details ? Object.values(body.details)[0] : null;
+      throw new Error(detail || body.error || "Não foi possível acessar a API");
     }
+
+    if (response.status === 204) return null;
+    return response.json();
   }
 
-  function create(record) {
-    const newRecord = { ...record, id: createId() };
-    write([...getAll(), newRecord]);
-    return newRecord;
+  async function getAll() {
+    const body = await request(API_URL);
+    return body.data.map(toLocalRecord);
   }
 
-  function update(id, updatedRecord) {
-    write(getAll().map((record) => (record.id === id ? { ...updatedRecord, id } : record)));
+  async function create(record) {
+    const body = await request(API_URL, {
+      method: "POST",
+      body: JSON.stringify(record),
+    });
+    return toLocalRecord(body.data);
   }
 
-  function remove(id) {
-    write(getAll().filter((record) => record.id !== id));
+  async function update(id, record) {
+    const body = await request(`${API_URL}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(record),
+    });
+    return toLocalRecord(body.data);
   }
 
-  function findById(id) {
-    return getAll().find((record) => record.id === id);
+  async function remove(id) {
+    await request(`${API_URL}/${id}`, { method: "DELETE" });
   }
 
-  return Object.freeze({ create, findById, getAll, remove, update });
+  return Object.freeze({ create, getAll, remove, update });
 })();

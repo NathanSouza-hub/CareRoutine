@@ -1,5 +1,30 @@
 const pool = require("../config/database");
 
+const RETURNING_FIELDS = `
+  id,
+  measured_at AS "measuredAt",
+  shift,
+  systolic_pressure AS "systolicPressure",
+  diastolic_pressure AS "diastolicPressure",
+  heart_rate AS "heartRate",
+  oxygen_saturation AS "oxygenSaturation",
+  temperature::FLOAT AS temperature,
+  blood_glucose AS "bloodGlucose",
+  notes,
+  created_at AS "createdAt",
+  updated_at AS "updatedAt"
+`;
+
+async function getAll() {
+  const result = await pool.query(`
+    SELECT ${RETURNING_FIELDS}
+    FROM vital_signs
+    ORDER BY measured_at DESC
+  `);
+
+  return result.rows;
+}
+
 async function create(vitalSigns) {
   const query = `
     INSERT INTO vital_signs (
@@ -14,19 +39,7 @@ async function create(vitalSigns) {
       notes
     )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING
-      id,
-      measured_at AS "measuredAt",
-      shift,
-      systolic_pressure AS "systolicPressure",
-      diastolic_pressure AS "diastolicPressure",
-      heart_rate AS "heartRate",
-      oxygen_saturation AS "oxygenSaturation",
-      temperature::FLOAT AS temperature,
-      blood_glucose AS "bloodGlucose",
-      notes,
-      created_at AS "createdAt",
-      updated_at AS "updatedAt"
+    RETURNING ${RETURNING_FIELDS}
   `;
   const values = [
     vitalSigns.measuredAt,
@@ -44,4 +57,47 @@ async function create(vitalSigns) {
   return result.rows[0];
 }
 
-module.exports = Object.freeze({ create });
+async function update(id, vitalSigns) {
+  const query = `
+    UPDATE vital_signs
+    SET
+      measured_at = $1,
+      shift = $2,
+      systolic_pressure = $3,
+      diastolic_pressure = $4,
+      heart_rate = $5,
+      oxygen_saturation = $6,
+      temperature = $7,
+      blood_glucose = $8,
+      notes = $9,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = $10
+    RETURNING ${RETURNING_FIELDS}
+  `;
+  const values = [
+    vitalSigns.measuredAt,
+    vitalSigns.shift,
+    vitalSigns.systolicPressure,
+    vitalSigns.diastolicPressure,
+    vitalSigns.heartRate,
+    vitalSigns.oxygenSaturation,
+    vitalSigns.temperature,
+    vitalSigns.bloodGlucose,
+    vitalSigns.notes,
+    id,
+  ];
+  const result = await pool.query(query, values);
+
+  return result.rows[0] ?? null;
+}
+
+async function remove(id) {
+  const result = await pool.query(
+    "DELETE FROM vital_signs WHERE id = $1 RETURNING id",
+    [id],
+  );
+
+  return result.rowCount > 0;
+}
+
+module.exports = Object.freeze({ create, getAll, remove, update });
