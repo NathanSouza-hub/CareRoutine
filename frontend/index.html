@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="CareRoutine: organização simples da rotina diária de cuidados."
+    />
+    <title>CareRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar__content">
+        <a class="brand" href="#inicio" aria-label="Ir para o início">
+          Care<span>Routine</span>
+        </a>
+        <p class="current-date" id="current-date" aria-live="polite"></p>
+      </div>
+    </header>
+
+    <main id="inicio">
+      <section class="hero container" aria-labelledby="page-title">
+        <p class="eyebrow">Cuidado organizado, rotina mais tranquila</p>
+        <h1 id="page-title">Olá! O que vamos acompanhar hoje?</h1>
+        <p class="hero__description">
+          Centralize as informações essenciais do dia e consulte cada área
+          com facilidade.
+        </p>
+      </section>
+
+      <section class="modules container" aria-labelledby="modules-title">
+        <h2 id="modules-title">Áreas de acompanhamento</h2>
+
+        <div class="module-grid">
+          <article class="module-card">
+            <div class="module-card__icon" aria-hidden="true">♥</div>
+            <h3>Sinais vitais</h3>
+            <p>Registre pressão, temperatura, saturação e outras medições.</p>
+            <button type="button" data-module="Sinais vitais">Acessar área</button>
+          </article>
+
+          <article class="module-card">
+            <div class="module-card__icon" aria-hidden="true">+</div>
+            <h3>Medicamentos</h3>
+            <p>Acompanhe horários, dosagens e o status das administrações.</p>
+            <button type="button" data-module="Medicamentos">Acessar área</button>
+          </article>
+
+          <article class="module-card">
+            <div class="module-card__icon" aria-hidden="true">✓</div>
+            <h3>Rotina</h3>
+            <p>Organize as atividades e os compromissos de cada dia.</p>
+            <button type="button" data-module="Rotina">Acessar área</button>
+          </article>
+        </div>
+      </section>
+
+      <p class="feedback container" id="feedback" aria-live="polite"></p>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>CareRoutine — apoio para o cuidado cotidiano.</p>
+      </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
