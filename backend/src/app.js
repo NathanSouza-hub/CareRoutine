@@ -1,11 +1,20 @@
 const cors = require("cors");
 const express = require("express");
 const pool = require("./config/database");
+const createVitalsController = require("./controllers/vitals-controller");
+const vitalsRepository = require("./repositories/vitals-repository");
+const createVitalsRouter = require("./routes/vitals-routes");
+const createVitalsService = require("./services/vitals-service");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+const vitalsService = createVitalsService(vitalsRepository);
+const vitalsController = createVitalsController(vitalsService);
+
+app.use("/api/vitals", createVitalsRouter(vitalsController));
 
 app.get("/health", (request, response) => {
   response.status(200).json({
@@ -32,6 +41,13 @@ app.get("/health/database", async (request, response) => {
       message: "Banco de dados indisponível",
     });
   }
+});
+
+app.use((error, request, response, next) => {
+  console.error("Erro inesperado na API:", error.message);
+  response.status(500).json({
+    error: "Erro interno do servidor",
+  });
 });
 
 module.exports = app;
