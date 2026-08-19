@@ -5,6 +5,10 @@ const createVitalsController = require("./controllers/vitals-controller");
 const vitalsRepository = require("./repositories/vitals-repository");
 const createVitalsRouter = require("./routes/vitals-routes");
 const createVitalsService = require("./services/vitals-service");
+const createMedicationsController = require("./controllers/medications-controller");
+const medicationsRepository = require("./repositories/medications-repository");
+const createMedicationsRouter = require("./routes/medications-routes");
+const createMedicationsService = require("./services/medications-service");
 
 const app = express();
 
@@ -15,6 +19,10 @@ const vitalsService = createVitalsService(vitalsRepository);
 const vitalsController = createVitalsController(vitalsService);
 
 app.use("/api/vitals", createVitalsRouter(vitalsController));
+
+const medicationsService = createMedicationsService(medicationsRepository);
+const medicationsController = createMedicationsController(medicationsService);
+app.use("/api/medications", createMedicationsRouter(medicationsController));
 
 app.get("/health", (request, response) => {
   response.status(200).json({

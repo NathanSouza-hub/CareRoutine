@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Acompanhamento de medicamentos no CareRoutine." />
+    <title>Medicamentos | CareRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar__content">
+        <a class="brand" href="index.html">Care<span>Routine</span></a>
+        <p class="current-date" id="current-date"></p>
+      </div>
+    </header>
+    <main class="container">
+      <section class="page-header">
+        <a class="back-link" href="index.html">← Voltar ao início</a>
+        <h1>Medicamentos</h1>
+        <p>Cadastre tratamentos recorrentes e acompanhe cada dose do dia.</p>
+      </section>
+
+      <section class="form-panel" aria-labelledby="form-title">
+        <h2 id="form-title">Novo tratamento</h2>
+        <form id="medication-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="name">Medicamento</label>
+              <input id="name" name="name" maxlength="120" required />
+            </div>
+            <div class="form-field">
+              <label for="dosage">Dosagem</label>
+              <input id="dosage" name="dosage" maxlength="80" placeholder="Ex.: 50 mg" required />
+            </div>
+            <div class="form-field form-field--full">
+              <label for="times">Horários diários</label>
+              <input id="times" name="times" placeholder="Ex.: 08:00, 20:00" required />
+              <small>Separe vários horários por vírgula.</small>
+            </div>
+            <div class="form-field">
+              <label for="start-date">Data inicial</label>
+              <input id="start-date" name="startDate" type="date" required />
+            </div>
+            <div class="form-field">
+              <label for="end-date">Data final</label>
+              <input id="end-date" name="endDate" type="date" />
+            </div>
+            <div class="form-field form-field--full">
+              <label for="instructions">Instruções</label>
+              <textarea id="instructions" name="instructions" maxlength="500" placeholder="Ex.: tomar após a refeição"></textarea>
+            </div>
+            <div class="form-field" id="active-field" hidden>
+              <label><input id="is-active" name="isActive" type="checkbox" checked /> Tratamento ativo</label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="primary-button" id="submit-button" type="submit">Cadastrar tratamento</button>
+            <button class="secondary-button" id="cancel-button" type="button" hidden>Cancelar edição</button>
+            <p class="form-message" id="form-message" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <section class="history-panel" aria-labelledby="daily-title">
+        <div class="history-panel__header">
+          <div><p class="eyebrow">Acompanhamento</p><h2 id="daily-title">Doses do dia</h2></div>
+          <div class="form-field"><label for="daily-date">Data</label><input id="daily-date" type="date" /></div>
+        </div>
+        <p class="empty-history" id="empty-daily">Nenhuma dose programada para esta data.</p>
+        <div class="table-wrapper" id="daily-wrapper" hidden>
+          <table><thead><tr><th>Horário</th><th>Medicamento</th><th>Dosagem</th><th>Status</th><th>Ações</th></tr></thead><tbody id="daily-body"></tbody></table>
+        </div>
+      </section>
+
+      <section class="history-panel" aria-labelledby="treatments-title">
+        <div class="history-panel__header"><div><p class="eyebrow">Configuração</p><h2 id="treatments-title">Tratamentos</h2></div><p class="records-count" id="treatments-count"></p></div>
+        <p class="empty-history" id="empty-treatments">Nenhum tratamento cadastrado.</p>
+        <div class="table-wrapper" id="treatments-wrapper" hidden>
+          <table><thead><tr><th>Medicamento</th><th>Dosagem</th><th>Horários</th><th>Período</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="treatments-body"></tbody></table>
+        </div>
+      </section>
+    </main>
+    <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+    <script src="js/medications-repository.js"></script>
+    <script src="js/medications.js"></script>
+  </body>
+</html>
