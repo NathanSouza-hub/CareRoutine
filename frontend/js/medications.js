@@ -47,10 +47,10 @@ async function loadTreatments() { treatments = await MedicationsRepository.getAl
 async function loadDaily() {
   const doses = await MedicationsRepository.getDaily(dailyDate.value);
   dailyBody.replaceChildren(); emptyDaily.hidden = doses.length > 0; dailyWrapper.hidden = doses.length === 0;
-  const labels = { pending: "Pendente", taken: "Tomado", skipped: "Ignorado" };
+  const labels = { pending: "Pendente", taken: "Administrado", skipped: "Ignorado" };
   doses.forEach((dose) => {
     const row = document.createElement("tr"); const actions = cell("");
-    actions.append(button("Tomado", "taken", dose.scheduleId), button("Ignorado", "skipped", dose.scheduleId));
+    actions.append(button("Administrado", "taken", dose.scheduleId), button("Ignorado", "skipped", dose.scheduleId));
     actions.dataset.medicationId = dose.medicationId;
     row.append(cell(dose.time), cell(dose.name), cell(dose.dosage), cell(labels[dose.status]), actions); dailyBody.append(row);
   });

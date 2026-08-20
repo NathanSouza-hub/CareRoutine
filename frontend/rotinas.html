@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Organização da rotina diária no CareRoutine." />
+    <title>Rotinas | CareRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="topbar"><div class="container topbar__content"><a class="brand" href="index.html">Care<span>Routine</span></a><p class="current-date" id="current-date"></p></div></header>
+    <main class="container">
+      <section class="page-header">
+        <a class="back-link" href="index.html">← Voltar ao início</a>
+        <h1>Rotinas</h1>
+        <p>Organize atividades recorrentes e acompanhe o que foi realizado em cada dia.</p>
+      </section>
+
+      <section class="form-panel" aria-labelledby="form-title">
+        <h2 id="form-title">Nova atividade</h2>
+        <form id="routine-form">
+          <div class="form-grid">
+            <div class="form-field"><label for="title">Atividade</label><input id="title" name="title" maxlength="120" placeholder="Ex.: Caminhada" required /></div>
+            <div class="form-field"><label for="category">Categoria</label><select id="category" name="category" required><option value="">Selecione</option><option>Alimentação</option><option>Atividade física</option><option>Higiene</option><option>Lazer</option><option>Saúde</option><option>Outro</option></select></div>
+            <div class="form-field"><label for="time">Horário</label><input id="time" name="time" type="time" required /></div>
+            <div class="form-field"><label for="start-date">Data inicial</label><input id="start-date" name="startDate" type="date" required /></div>
+            <div class="form-field"><label for="end-date">Data final</label><input id="end-date" name="endDate" type="date" /></div>
+            <div class="form-field" id="active-field" hidden><label><input id="is-active" name="isActive" type="checkbox" checked /> Atividade ativa</label></div>
+            <div class="form-field form-field--full"><label for="notes">Observações</label><textarea id="notes" name="notes" maxlength="500" placeholder="Inclua orientações importantes"></textarea></div>
+          </div>
+          <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Cadastrar atividade</button><button class="secondary-button" id="cancel-button" type="button" hidden>Cancelar edição</button><p class="form-message" id="form-message" aria-live="polite"></p></div>
+        </form>
+      </section>
+
+      <section class="history-panel" aria-labelledby="daily-title">
+        <div class="history-panel__header"><div><p class="eyebrow">Acompanhamento</p><h2 id="daily-title">Atividades do dia</h2></div><div class="form-field"><label for="daily-date">Data</label><input id="daily-date" type="date" /></div></div>
+        <p class="empty-history" id="empty-daily">Nenhuma atividade programada para esta data.</p>
+        <div class="table-wrapper" id="daily-wrapper" hidden><table><thead><tr><th>Horário</th><th>Atividade</th><th>Categoria</th><th>Status</th><th>Ações</th></tr></thead><tbody id="daily-body"></tbody></table></div>
+      </section>
+
+      <section class="history-panel" aria-labelledby="routines-title">
+        <div class="history-panel__header"><div><p class="eyebrow">Configuração</p><h2 id="routines-title">Rotinas cadastradas</h2></div><p class="records-count" id="routines-count"></p></div>
+        <p class="empty-history" id="empty-routines">Nenhuma rotina cadastrada.</p>
+        <div class="table-wrapper" id="routines-wrapper" hidden><table><thead><tr><th>Atividade</th><th>Categoria</th><th>Horário</th><th>Período</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="routines-body"></tbody></table></div>
+      </section>
+    </main>
+    <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+    <script src="js/routines-repository.js"></script>
+    <script src="js/routines.js"></script>
+  </body>
+</html>

@@ -18,7 +18,7 @@ simples, organizada e acessível ao cuidador.
 
 - `frontend/`: interface utilizada pelo cuidador
 - `backend/`: API e regras da aplicação
-- Banco de dados: será definido durante o desenvolvimento
+- Banco de dados: PostgreSQL
 
 ## Organização do frontend
 
@@ -28,8 +28,7 @@ crescem, o código é separado por responsabilidade.
 ### Padrões utilizados
 
 - **Repository Pattern:** centraliza as operações de leitura e escrita dos
-  registros. Atualmente, `vitals-repository.js` usa o `localStorage`; no futuro,
-  essa implementação poderá ser substituída por chamadas à API.
+  registros e o acesso à API.
 - **Module Pattern:** mantém detalhes internos do repositório privados e expõe
   somente as operações necessárias para cadastrar, consultar, editar e excluir.
 - **Event delegation:** trata as ações das linhas do histórico em um único ponto,
@@ -37,4 +36,4 @@ crescem, o código é separado por responsabilidade.
 
 ## Status
 
-Módulo de sinais vitais em desenvolvimento com persistência local no navegador.
+Módulos de sinais vitais, medicamentos e rotinas integrados à API e ao PostgreSQL.

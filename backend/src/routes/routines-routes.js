@@ -1,0 +1,14 @@
+const { Router } = require("express");
+
+function createRoutinesRouter(controller) {
+  const router = Router();
+  router.get("/daily", controller.getDaily);
+  router.get("/", controller.getAll);
+  router.post("/", controller.create);
+  router.put("/:id", controller.update);
+  router.delete("/:id", controller.remove);
+  router.patch("/:id/completion", controller.setCompletion);
+  return router;
+}
+
+module.exports = createRoutinesRouter;
