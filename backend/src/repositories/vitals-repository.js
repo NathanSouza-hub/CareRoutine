@@ -15,15 +15,20 @@ const RETURNING_FIELDS = `
   updated_at AS "updatedAt"
 `;
 
-async function getAll(patientId) {
+async function getAll(patientId, userId) {
   const result = await pool.query(`
     SELECT ${RETURNING_FIELDS}
     FROM vital_signs
-    WHERE patient_id = $1
+    WHERE patient_id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2)
     ORDER BY measured_at DESC
-  `, [patientId]);
+  `, [patientId, userId]);
 
   return result.rows;
+}
+
+async function patientBelongsToUser(patientId, userId) {
+  const result = await pool.query("SELECT 1 FROM patients WHERE id = $1 AND user_id = $2", [patientId, userId]);
+  return result.rowCount > 0;
 }
 
 async function create(vitalSigns) {
@@ -60,7 +65,7 @@ async function create(vitalSigns) {
   return result.rows[0];
 }
 
-async function update(id, vitalSigns) {
+async function update(id, vitalSigns, userId) {
   const query = `
     UPDATE vital_signs
     SET
@@ -74,7 +79,7 @@ async function update(id, vitalSigns) {
       blood_glucose = $8,
       notes = $9,
       updated_at = CURRENT_TIMESTAMP
-    WHERE id = $10
+    WHERE id = $10 AND patient_id IN (SELECT id FROM patients WHERE user_id = $11)
     RETURNING ${RETURNING_FIELDS}
   `;
   const values = [
@@ -88,19 +93,20 @@ async function update(id, vitalSigns) {
     vitalSigns.bloodGlucose,
     vitalSigns.notes,
     id,
+    userId,
   ];
   const result = await pool.query(query, values);
 
   return result.rows[0] ?? null;
 }
 
-async function remove(id) {
+async function remove(id, userId) {
   const result = await pool.query(
-    "DELETE FROM vital_signs WHERE id = $1 RETURNING id",
-    [id],
+    "DELETE FROM vital_signs WHERE id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2) RETURNING id",
+    [id, userId],
   );
 
   return result.rowCount > 0;
 }
 
-module.exports = Object.freeze({ create, getAll, remove, update });
+module.exports = Object.freeze({ create, getAll, patientBelongsToUser, remove, update });

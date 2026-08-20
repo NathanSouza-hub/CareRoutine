@@ -11,10 +11,21 @@ function validRoutine(overrides = {}) {
 describe("routines service", () => {
   it("normaliza e cadastra uma rotina diária", async () => {
     let received;
-    const service = createRoutinesService({ async create(data) { received = data; return "4"; } });
-    assert.deepEqual(await service.create(validRoutine()), { id: "4" });
+    const service = createRoutinesService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return "4"; },
+    });
+    assert.deepEqual(await service.create(validRoutine(), "9"), { id: "4" });
     assert.equal(received.endDate, null);
     assert.equal(received.isActive, true);
+  });
+
+  it("rejeita cadastro para paciente de outro usuário", async () => {
+    const service = createRoutinesService({
+      patientBelongsToUser: async () => false,
+      create: async () => assert.fail(),
+    });
+    await assert.rejects(service.create(validRoutine(), "9"), RoutineValidationError);
   });
 
   it("rejeita horário inválido", async () => {

@@ -38,25 +38,31 @@ function validateRoutine(input, editing = false) {
 }
 
 function createRoutinesService(repository) {
-  async function getAll(patientId) {
+  async function getAll(patientId, userId) {
     validateId(patientId, "patientId");
-    return repository.getAll(patientId);
+    return repository.getAll(patientId, userId);
   }
-  async function create(input) { return { id: await repository.create(validateRoutine(input ?? {})) }; }
-  async function update(id, input) {
+  async function create(input, userId) {
+    const routine = validateRoutine(input ?? {});
+    if (!(await repository.patientBelongsToUser(routine.patientId, userId))) {
+      throw new RoutineValidationError({ patientId: "Paciente não encontrado" });
+    }
+    return { id: await repository.create(routine) };
+  }
+  async function update(id, input, userId) {
     validateId(id);
-    if (!(await repository.update(id, validateRoutine(input ?? {}, true)))) throw new RoutineNotFoundError();
+    if (!(await repository.update(id, validateRoutine(input ?? {}, true), userId))) throw new RoutineNotFoundError();
   }
-  async function remove(id) {
+  async function remove(id, userId) {
     validateId(id);
-    if (!(await repository.remove(id))) throw new RoutineNotFoundError();
+    if (!(await repository.remove(id, userId))) throw new RoutineNotFoundError();
   }
-  async function getDaily(date, patientId) {
+  async function getDaily(date, patientId, userId) {
     if (!isDate(date)) throw new RoutineValidationError({ date: "Informe uma data válida" });
     validateId(patientId, "patientId");
-    return repository.getDaily(date, patientId);
+    return repository.getDaily(date, patientId, userId);
   }
-  async function setCompletion(id, input) {
+  async function setCompletion(id, input, userId) {
     validateId(id);
     const details = {};
     const date = typeof input.date === "string" ? input.date : "";
@@ -64,7 +70,7 @@ function createRoutinesService(repository) {
     if (!isDate(date)) details.date = "Informe uma data válida";
     if (!new Set(["completed", "skipped"]).has(status)) details.status = "Status inválido";
     if (Object.keys(details).length) throw new RoutineValidationError(details);
-    if (!(await repository.existsOnDate(id, date))) throw new RoutineNotFoundError("Atividade não encontrada nesta data");
+    if (!(await repository.existsOnDate(id, date, userId))) throw new RoutineNotFoundError("Atividade não encontrada nesta data");
     return repository.setCompletion({ routineId: id, date, status, completedAt: status === "completed" ? new Date() : null });
   }
   return Object.freeze({ create, getAll, getDaily, remove, setCompletion, update });

@@ -1,16 +1,21 @@
 const pool = require("../config/database");
 
-async function getAll(patientId) {
+async function getAll(patientId, userId) {
   const result = await pool.query(`
     SELECT id, title, category, to_char(scheduled_time, 'HH24:MI') AS time,
       notes, to_char(start_date, 'YYYY-MM-DD') AS "startDate",
       CASE WHEN end_date IS NULL THEN NULL ELSE to_char(end_date, 'YYYY-MM-DD') END AS "endDate",
       is_active AS "isActive"
     FROM routines
-    WHERE patient_id = $1
+    WHERE patient_id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2)
     ORDER BY is_active DESC, scheduled_time, title`,
-    [patientId]);
+    [patientId, userId]);
   return result.rows;
+}
+
+async function patientBelongsToUser(patientId, userId) {
+  const result = await pool.query("SELECT 1 FROM patients WHERE id = $1 AND user_id = $2", [patientId, userId]);
+  return result.rowCount > 0;
 }
 
 async function create(routine) {
@@ -22,22 +27,25 @@ async function create(routine) {
   return result.rows[0].id;
 }
 
-async function update(id, routine) {
+async function update(id, routine, userId) {
   const result = await pool.query(
     `UPDATE routines SET title = $1, category = $2, scheduled_time = $3, notes = $4,
       start_date = $5, end_date = $6, is_active = $7, updated_at = CURRENT_TIMESTAMP
-     WHERE id = $8 RETURNING id`,
-    [routine.title, routine.category, routine.time, routine.notes, routine.startDate, routine.endDate, routine.isActive, id],
+     WHERE id = $8 AND patient_id IN (SELECT id FROM patients WHERE user_id = $9) RETURNING id`,
+    [routine.title, routine.category, routine.time, routine.notes, routine.startDate, routine.endDate, routine.isActive, id, userId],
   );
   return result.rowCount > 0;
 }
 
-async function remove(id) {
-  const result = await pool.query("DELETE FROM routines WHERE id = $1 RETURNING id", [id]);
+async function remove(id, userId) {
+  const result = await pool.query(
+    "DELETE FROM routines WHERE id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2) RETURNING id",
+    [id, userId],
+  );
   return result.rowCount > 0;
 }
 
-async function getDaily(date, patientId) {
+async function getDaily(date, patientId, userId) {
   const result = await pool.query(
     `SELECT r.id, r.title, r.category, to_char(r.scheduled_time, 'HH24:MI') AS time,
       r.notes, COALESCE(c.status, 'pending') AS status, c.completed_at AS "completedAt"
@@ -46,17 +54,19 @@ async function getDaily(date, patientId) {
      WHERE r.is_active = TRUE AND r.start_date <= $1
        AND (r.end_date IS NULL OR r.end_date >= $1)
        AND r.patient_id = $2
+       AND r.patient_id IN (SELECT id FROM patients WHERE user_id = $3)
      ORDER BY r.scheduled_time, r.title`,
-    [date, patientId],
+    [date, patientId, userId],
   );
   return result.rows;
 }
 
-async function existsOnDate(id, date) {
+async function existsOnDate(id, date, userId) {
   const result = await pool.query(
     `SELECT 1 FROM routines WHERE id = $1 AND is_active = TRUE AND start_date <= $2
-       AND (end_date IS NULL OR end_date >= $2)`,
-    [id, date],
+       AND (end_date IS NULL OR end_date >= $2)
+       AND patient_id IN (SELECT id FROM patients WHERE user_id = $3)`,
+    [id, date, userId],
   );
   return result.rowCount > 0;
 }
@@ -73,4 +83,6 @@ async function setCompletion(data) {
   return result.rows[0];
 }
 
-module.exports = Object.freeze({ create, existsOnDate, getAll, getDaily, remove, setCompletion, update });
+module.exports = Object.freeze({
+  create, existsOnDate, getAll, getDaily, patientBelongsToUser, remove, setCompletion, update,
+});

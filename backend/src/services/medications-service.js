@@ -54,35 +54,38 @@ function validateMedication(input, editing = false) {
 }
 
 function createMedicationsService(repository) {
-  async function getAll(patientId) {
+  async function getAll(patientId, userId) {
     validateId(patientId, "patientId");
-    return repository.getAll(patientId);
+    return repository.getAll(patientId, userId);
   }
 
-  async function create(input) {
+  async function create(input, userId) {
     const medication = validateMedication(input ?? {});
+    if (!(await repository.patientBelongsToUser(medication.patientId, userId))) {
+      throw new MedicationValidationError({ patientId: "Paciente não encontrado" });
+    }
     const id = await repository.create(medication);
     return { id };
   }
 
-  async function update(id, input) {
+  async function update(id, input, userId) {
     validateId(id);
-    const updated = await repository.update(id, validateMedication(input ?? {}, true));
+    const updated = await repository.update(id, validateMedication(input ?? {}, true), userId);
     if (!updated) throw new MedicationNotFoundError();
   }
 
-  async function remove(id) {
+  async function remove(id, userId) {
     validateId(id);
-    if (!(await repository.remove(id))) throw new MedicationNotFoundError();
+    if (!(await repository.remove(id, userId))) throw new MedicationNotFoundError();
   }
 
-  async function getDaily(date, patientId) {
+  async function getDaily(date, patientId, userId) {
     if (!isDate(date)) throw new MedicationValidationError({ date: "Informe uma data válida" });
     validateId(patientId, "patientId");
-    return repository.getDaily(date, patientId);
+    return repository.getDaily(date, patientId, userId);
   }
 
-  async function setAdministration(medicationId, scheduleId, input) {
+  async function setAdministration(medicationId, scheduleId, input, userId) {
     validateId(medicationId, "medicationId");
     validateId(scheduleId, "scheduleId");
     const details = {};
@@ -93,7 +96,7 @@ function createMedicationsService(repository) {
     if (!new Set(["taken", "skipped"]).has(status)) details.status = "Status inválido";
     if (notes.length > 500) details.notes = "Use no máximo 500 caracteres";
     if (Object.keys(details).length) throw new MedicationValidationError(details);
-    if (!(await repository.scheduleBelongsToMedication(medicationId, scheduleId))) {
+    if (!(await repository.scheduleBelongsToMedication(medicationId, scheduleId, userId))) {
       throw new MedicationNotFoundError("Horário do medicamento não encontrado");
     }
     return repository.setAdministration({

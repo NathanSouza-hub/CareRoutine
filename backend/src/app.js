@@ -17,28 +17,39 @@ const createPatientsController = require("./controllers/patients-controller");
 const patientsRepository = require("./repositories/patients-repository");
 const createPatientsRouter = require("./routes/patients-routes");
 const createPatientsService = require("./services/patients-service");
+const createAuthController = require("./controllers/auth-controller");
+const usersRepository = require("./repositories/users-repository");
+const createAuthRouter = require("./routes/auth-routes");
+const createAuthService = require("./services/auth-service");
+const createRequireAuth = require("./middleware/require-auth");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+const authService = createAuthService(usersRepository);
+const authController = createAuthController(authService);
+app.use("/api/auth", createAuthRouter(authController));
+
+const requireAuth = createRequireAuth(authService);
+
 const vitalsService = createVitalsService(vitalsRepository);
 const vitalsController = createVitalsController(vitalsService);
 
-app.use("/api/vitals", createVitalsRouter(vitalsController));
+app.use("/api/vitals", requireAuth, createVitalsRouter(vitalsController));
 
 const medicationsService = createMedicationsService(medicationsRepository);
 const medicationsController = createMedicationsController(medicationsService);
-app.use("/api/medications", createMedicationsRouter(medicationsController));
+app.use("/api/medications", requireAuth, createMedicationsRouter(medicationsController));
 
 const routinesService = createRoutinesService(routinesRepository);
 const routinesController = createRoutinesController(routinesService);
-app.use("/api/routines", createRoutinesRouter(routinesController));
+app.use("/api/routines", requireAuth, createRoutinesRouter(routinesController));
 
 const patientsService = createPatientsService(patientsRepository);
 const patientsController = createPatientsController(patientsService);
-app.use("/api/patients", createPatientsRouter(patientsController));
+app.use("/api/patients", requireAuth, createPatientsRouter(patientsController));
 
 app.get("/health", (request, response) => {
   response.status(200).json({

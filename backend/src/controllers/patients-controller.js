@@ -12,11 +12,11 @@ function createPatientsController(service) {
     try { await callback(request, response); } catch (error) { handle(error, response, next); }
   };
   return Object.freeze({
-    getAll: action(async (request, response) => response.json({ data: await service.getAll() })),
-    getById: action(async (request, response) => response.json({ data: await service.getById(request.params.id) })),
-    create: action(async (request, response) => response.status(201).json({ data: await service.create(request.body) })),
-    update: action(async (request, response) => { await service.update(request.params.id, request.body); response.status(204).send(); }),
-    remove: action(async (request, response) => { await service.remove(request.params.id); response.status(204).send(); }),
+    getAll: action(async (request, response) => response.json({ data: await service.getAll(request.userId) })),
+    getById: action(async (request, response) => response.json({ data: await service.getById(request.params.id, request.userId) })),
+    create: action(async (request, response) => response.status(201).json({ data: await service.create(request.body, request.userId) })),
+    update: action(async (request, response) => { await service.update(request.params.id, request.body, request.userId); response.status(204).send(); }),
+    remove: action(async (request, response) => { await service.remove(request.params.id, request.userId); response.status(204).send(); }),
   });
 }
 

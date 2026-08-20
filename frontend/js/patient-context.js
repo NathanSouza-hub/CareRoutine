@@ -38,13 +38,20 @@ const PatientContext = (() => {
   }
 
   async function init() {
-    let patients = [];
+    let patients;
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(API_URL, { headers: { ...AuthContext.authHeader() } });
+      if (response.status === 401) {
+        AuthContext.logout();
+        return getCurrentId();
+      }
+      if (!response.ok) throw new Error("Falha ao carregar pacientes");
       const body = await response.json();
       patients = body.data ?? [];
     } catch (error) {
-      patients = [];
+      // A API pode estar temporariamente indisponível (ex.: reiniciando).
+      // Nesse caso mantemos a última seleção salva em vez de apagá-la.
+      return getCurrentId();
     }
     const currentId = getCurrentId();
     const stillExists = patients.some((patient) => String(patient.id) === currentId);

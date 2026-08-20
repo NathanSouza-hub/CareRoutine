@@ -112,25 +112,29 @@ function createVitalsService(repository) {
     }
   }
 
-  async function create(input) {
-    return repository.create(validateAndMap(input ?? {}));
+  async function create(input, userId) {
+    const vitalSigns = validateAndMap(input ?? {});
+    if (!(await repository.patientBelongsToUser(vitalSigns.patientId, userId))) {
+      throw new ValidationError({ patientId: "Paciente não encontrado" });
+    }
+    return repository.create(vitalSigns);
   }
 
-  async function getAll(patientId) {
+  async function getAll(patientId, userId) {
     validateId(patientId, "patientId");
-    return repository.getAll(patientId);
+    return repository.getAll(patientId, userId);
   }
 
-  async function update(id, input) {
+  async function update(id, input, userId) {
     validateId(id);
-    const updatedRecord = await repository.update(id, validateAndMap(input ?? {}, true));
+    const updatedRecord = await repository.update(id, validateAndMap(input ?? {}, true), userId);
     if (!updatedRecord) throw new NotFoundError();
     return updatedRecord;
   }
 
-  async function remove(id) {
+  async function remove(id, userId) {
     validateId(id);
-    const removed = await repository.remove(id);
+    const removed = await repository.remove(id, userId);
     if (!removed) throw new NotFoundError();
   }
 

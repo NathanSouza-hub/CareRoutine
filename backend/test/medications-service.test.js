@@ -21,15 +21,24 @@ describe("medications service", () => {
   it("normaliza e cadastra um tratamento recorrente", async () => {
     let received;
     const service = createMedicationsService({
+      patientBelongsToUser: async () => true,
       async create(data) { received = data; return "7"; },
     });
 
-    const result = await service.create(validMedication());
+    const result = await service.create(validMedication(), "9");
 
     assert.deepEqual(received.times, ["08:00", "20:00"]);
     assert.equal(received.endDate, null);
     assert.equal(received.isActive, true);
     assert.deepEqual(result, { id: "7" });
+  });
+
+  it("rejeita cadastro para paciente de outro usuário", async () => {
+    const service = createMedicationsService({
+      patientBelongsToUser: async () => false,
+      create: async () => assert.fail(),
+    });
+    await assert.rejects(service.create(validMedication(), "9"), MedicationValidationError);
   });
 
   it("rejeita tratamento sem horário", async () => {

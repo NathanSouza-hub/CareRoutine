@@ -1,7 +1,11 @@
 const PatientsRepository = (() => {
   const API_URL = "http://localhost:3000/api/patients";
   async function request(url, options = {}) {
-    const response = await fetch(url, { headers: { "Content-Type": "application/json" }, ...options });
+    const response = await fetch(url, {
+      ...options,
+      headers: { "Content-Type": "application/json", ...AuthContext.authHeader(), ...options.headers },
+    });
+    if (response.status === 401) { AuthContext.logout(); throw new Error("Sessão expirada"); }
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
       throw new Error(body.details ? Object.values(body.details)[0] : body.error || "Falha ao acessar a API");

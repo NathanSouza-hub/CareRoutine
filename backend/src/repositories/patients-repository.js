@@ -47,42 +47,50 @@ const COLUMNS = [
   "doctor_name", "doctor_specialty", "doctor_phone", "care_plan_notes",
 ];
 
-async function getAll() {
+async function getAll(userId) {
   const result = await pool.query(`
     SELECT ${RETURNING_FIELDS}
     FROM patients
-    ORDER BY is_active DESC, full_name`);
+    WHERE user_id = $1
+    ORDER BY is_active DESC, full_name`,
+    [userId]);
   return result.rows;
 }
 
-async function getById(id) {
-  const result = await pool.query(`SELECT ${RETURNING_FIELDS} FROM patients WHERE id = $1`, [id]);
+async function getById(id, userId) {
+  const result = await pool.query(
+    `SELECT ${RETURNING_FIELDS} FROM patients WHERE id = $1 AND user_id = $2`,
+    [id, userId],
+  );
   return result.rows[0] ?? null;
 }
 
-async function create(patient) {
+async function create(patient, userId) {
   const values = FIELDS.map((field) => patient[field]);
   const placeholders = COLUMNS.map((_, index) => `$${index + 1}`).join(", ");
   const result = await pool.query(
-    `INSERT INTO patients (${COLUMNS.join(", ")}) VALUES (${placeholders}) RETURNING id`,
-    values,
+    `INSERT INTO patients (${COLUMNS.join(", ")}, user_id) VALUES (${placeholders}, $${COLUMNS.length + 1}) RETURNING id`,
+    [...values, userId],
   );
   return result.rows[0].id;
 }
 
-async function update(id, patient) {
+async function update(id, patient, userId) {
   const assignments = COLUMNS.map((column, index) => `${column} = $${index + 1}`).join(", ");
   const values = FIELDS.map((field) => patient[field]);
   const result = await pool.query(
     `UPDATE patients SET ${assignments}, is_active = $${COLUMNS.length + 1}, updated_at = CURRENT_TIMESTAMP
-     WHERE id = $${COLUMNS.length + 2} RETURNING id`,
-    [...values, patient.isActive, id],
+     WHERE id = $${COLUMNS.length + 2} AND user_id = $${COLUMNS.length + 3} RETURNING id`,
+    [...values, patient.isActive, id, userId],
   );
   return result.rowCount > 0;
 }
 
-async function remove(id) {
-  const result = await pool.query("DELETE FROM patients WHERE id = $1 RETURNING id", [id]);
+async function remove(id, userId) {
+  const result = await pool.query(
+    "DELETE FROM patients WHERE id = $1 AND user_id = $2 RETURNING id",
+    [id, userId],
+  );
   return result.rowCount > 0;
 }
 

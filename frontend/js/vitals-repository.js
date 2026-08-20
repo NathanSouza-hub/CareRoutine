@@ -30,9 +30,11 @@ const VitalsRepository = (() => {
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
-      headers: { "Content-Type": "application/json" },
       ...options,
+      headers: { "Content-Type": "application/json", ...AuthContext.authHeader(), ...options.headers },
     });
+
+    if (response.status === 401) { AuthContext.logout(); throw new Error("Sessão expirada"); }
 
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));

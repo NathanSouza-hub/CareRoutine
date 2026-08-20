@@ -53,25 +53,27 @@ function validatePatient(input, editing = false) {
 }
 
 function createPatientsService(repository) {
-  async function getAll() { return repository.getAll(); }
+  async function getAll(userId) { return repository.getAll(userId); }
 
-  async function getById(id) {
+  async function getById(id, userId) {
     validateId(id);
-    const patient = await repository.getById(id);
+    const patient = await repository.getById(id, userId);
     if (!patient) throw new PatientNotFoundError();
     return patient;
   }
 
-  async function create(input) { return { id: await repository.create(validatePatient(input ?? {})) }; }
-
-  async function update(id, input) {
-    validateId(id);
-    if (!(await repository.update(id, validatePatient(input ?? {}, true)))) throw new PatientNotFoundError();
+  async function create(input, userId) {
+    return { id: await repository.create(validatePatient(input ?? {}), userId) };
   }
 
-  async function remove(id) {
+  async function update(id, input, userId) {
     validateId(id);
-    if (!(await repository.remove(id))) throw new PatientNotFoundError();
+    if (!(await repository.update(id, validatePatient(input ?? {}, true), userId))) throw new PatientNotFoundError();
+  }
+
+  async function remove(id, userId) {
+    validateId(id);
+    if (!(await repository.remove(id, userId))) throw new PatientNotFoundError();
   }
 
   return Object.freeze({ create, getAll, getById, remove, update });

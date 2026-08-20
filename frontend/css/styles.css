@@ -500,6 +500,91 @@ tbody tr:last-child td {
   color: #9b2c2c;
 }
 
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.auth-card .brand {
+  display: block;
+  margin-bottom: 28px;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.auth-card h1 {
+  margin-bottom: 6px;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.auth-card .auth-subtitle {
+  margin-bottom: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.auth-card .form-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.auth-card .primary-button {
+  width: 100%;
+}
+
+.auth-footer {
+  margin-top: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.auth-footer a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sidebar__user {
+  margin: auto 0 0;
+  padding: 0 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.sidebar__logout {
+  margin-top: 10px;
+  padding: 11px 14px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sidebar__logout:hover,
+.sidebar__logout:focus-visible {
+  color: #9b2c2c;
+  background: var(--accent);
+}
+
 @media (max-width: 760px) {
   .app-shell {
     flex-direction: column;

@@ -24,6 +24,7 @@ describe("vitals service", () => {
   it("valida, transforma e envia os dados ao repositório", async () => {
     let receivedData;
     const repository = {
+      patientBelongsToUser: async () => true,
       async create(data) {
         receivedData = data;
         return { id: "1", ...data };
@@ -51,6 +52,7 @@ describe("vitals service", () => {
   it("converte glicemia e observações vazias para null", async () => {
     let receivedData;
     const service = createVitalsService({
+      patientBelongsToUser: async () => true,
       async create(data) {
         receivedData = data;
         return data;
@@ -66,6 +68,7 @@ describe("vitals service", () => {
   it("aceita um registro sem nenhuma medição", async () => {
     let receivedData;
     const service = createVitalsService({
+      patientBelongsToUser: async () => true,
       async create(data) {
         receivedData = data;
         return data;
@@ -119,6 +122,14 @@ describe("vitals service", () => {
         return true;
       },
     );
+  });
+
+  it("rejeita cadastro para paciente de outro usuário", async () => {
+    const service = createVitalsService({
+      patientBelongsToUser: async () => false,
+      create: async () => assert.fail(),
+    });
+    await assert.rejects(service.create(validInput()), ValidationError);
   });
 
   it("lista os registros fornecidos pelo repositório", async () => {

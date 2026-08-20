@@ -1,6 +1,6 @@
 const pool = require("../config/database");
 
-async function getAll(patientId) {
+async function getAll(patientId, userId) {
   const result = await pool.query(`
     SELECT
       m.id,
@@ -26,11 +26,16 @@ async function getAll(patientId) {
       ) AS schedules
     FROM medications m
     LEFT JOIN medication_schedules s ON s.medication_id = m.id AND s.is_active = TRUE
-    WHERE m.patient_id = $1
+    WHERE m.patient_id = $1 AND m.patient_id IN (SELECT id FROM patients WHERE user_id = $2)
     GROUP BY m.id
     ORDER BY m.is_active DESC, m.name
-  `, [patientId]);
+  `, [patientId, userId]);
   return result.rows;
+}
+
+async function patientBelongsToUser(patientId, userId) {
+  const result = await pool.query("SELECT 1 FROM patients WHERE id = $1 AND user_id = $2", [patientId, userId]);
+  return result.rowCount > 0;
 }
 
 async function create(medication) {
@@ -67,7 +72,7 @@ async function create(medication) {
   }
 }
 
-async function update(id, medication) {
+async function update(id, medication, userId) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -75,7 +80,7 @@ async function update(id, medication) {
       `UPDATE medications
        SET name = $1, dosage = $2, instructions = $3, start_date = $4,
            end_date = $5, is_active = $6, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7 RETURNING id`,
+       WHERE id = $7 AND patient_id IN (SELECT id FROM patients WHERE user_id = $8) RETURNING id`,
       [
         medication.name,
         medication.dosage,
@@ -84,6 +89,7 @@ async function update(id, medication) {
         medication.endDate,
         medication.isActive,
         id,
+        userId,
       ],
     );
     if (!result.rowCount) {
@@ -113,12 +119,15 @@ async function update(id, medication) {
   }
 }
 
-async function remove(id) {
-  const result = await pool.query("DELETE FROM medications WHERE id = $1 RETURNING id", [id]);
+async function remove(id, userId) {
+  const result = await pool.query(
+    "DELETE FROM medications WHERE id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2) RETURNING id",
+    [id, userId],
+  );
   return result.rowCount > 0;
 }
 
-async function getDaily(date, patientId) {
+async function getDaily(date, patientId, userId) {
   const result = await pool.query(
     `SELECT
        m.id AS "medicationId", m.name, m.dosage, m.instructions,
@@ -133,17 +142,20 @@ async function getDaily(date, patientId) {
        AND m.start_date <= $1
        AND (m.end_date IS NULL OR m.end_date >= $1)
        AND m.patient_id = $2
+       AND m.patient_id IN (SELECT id FROM patients WHERE user_id = $3)
      ORDER BY s.scheduled_time, m.name`,
-    [date, patientId],
+    [date, patientId, userId],
   );
   return result.rows;
 }
 
-async function scheduleBelongsToMedication(medicationId, scheduleId) {
+async function scheduleBelongsToMedication(medicationId, scheduleId, userId) {
   const result = await pool.query(
-    `SELECT 1 FROM medication_schedules
-     WHERE id = $1 AND medication_id = $2 AND is_active = TRUE`,
-    [scheduleId, medicationId],
+    `SELECT 1 FROM medication_schedules s
+     JOIN medications m ON m.id = s.medication_id
+     WHERE s.id = $1 AND s.medication_id = $2 AND s.is_active = TRUE
+       AND m.patient_id IN (SELECT id FROM patients WHERE user_id = $3)`,
+    [scheduleId, medicationId, userId],
   );
   return result.rowCount > 0;
 }
@@ -168,6 +180,7 @@ module.exports = Object.freeze({
   create,
   getAll,
   getDaily,
+  patientBelongsToUser,
   remove,
   scheduleBelongsToMedication,
   setAdministration,
