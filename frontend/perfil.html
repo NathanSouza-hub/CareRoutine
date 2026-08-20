@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Meu perfil no LoreRoutine." />
+    <title>Meu perfil | LoreRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <a class="brand" href="index.html">Lore<span>Routine</span></a>
+          <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
+        <nav class="sidebar__nav">
+          <a class="nav-link" href="index.html">Dashboard</a>
+          <a class="nav-link" href="pacientes.html">Paciente</a>
+          <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
+          <a class="nav-link" href="medicamentos.html">Medicamentos</a>
+          <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="agenda.html">Agenda</a>
+          <a class="nav-link" href="historico.html">Histórico</a>
+        </nav>
+        <p class="sidebar__user" id="sidebar-user"></p>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date"></p><div class="account-menu" id="account-menu"></div></div></header>
+
+        <main class="main-content container">
+          <section class="page-header">
+            <h1>Meu perfil</h1>
+            <p>Gerencie seus dados de acesso e as informações do cuidador.</p>
+          </section>
+
+          <div class="tabs" role="tablist">
+            <button class="tab-button" id="tab-button-cadastro" type="button" data-tab="cadastro">Editar cadastro</button>
+            <button class="tab-button" id="tab-button-senha" type="button" data-tab="senha">Mudar senha</button>
+            <button class="tab-button" id="tab-button-info" type="button" data-tab="info">Informações adicionais</button>
+            <button class="tab-button" id="tab-button-foto" type="button" data-tab="foto">Foto</button>
+          </div>
+
+          <section class="form-panel" id="tab-cadastro" aria-labelledby="cadastro-title" hidden>
+            <h2 id="cadastro-title">Editar cadastro</h2>
+            <form id="profile-form">
+              <div class="form-grid">
+                <div class="form-field"><label for="profile-name">Nome</label><input id="profile-name" name="name" maxlength="120" required /></div>
+                <div class="form-field"><label for="profile-email">E-mail</label><input id="profile-email" name="email" type="email" required /></div>
+              </div>
+              <div class="form-actions"><button class="primary-button" id="profile-submit" type="submit">Salvar alterações</button><p class="form-message" id="profile-message" aria-live="polite"></p></div>
+            </form>
+          </section>
+
+          <section class="form-panel" id="tab-senha" aria-labelledby="senha-title" hidden>
+            <h2 id="senha-title">Mudar senha</h2>
+            <form id="password-form">
+              <div class="form-grid">
+                <div class="form-field"><label for="current-password">Senha atual</label><input id="current-password" name="currentPassword" type="password" required autocomplete="current-password" /></div>
+                <div class="form-field"><label for="new-password">Nova senha</label><input id="new-password" name="newPassword" type="password" minlength="8" required autocomplete="new-password" /></div>
+                <div class="form-field"><label for="confirm-new-password">Confirmar nova senha</label><input id="confirm-new-password" name="confirmNewPassword" type="password" minlength="8" required autocomplete="new-password" /></div>
+              </div>
+              <div class="form-actions"><button class="primary-button" id="password-submit" type="submit">Atualizar senha</button><p class="form-message" id="password-message" aria-live="polite"></p></div>
+            </form>
+          </section>
+
+          <section class="form-panel" id="tab-info" aria-labelledby="info-title" hidden>
+            <h2 id="info-title">Informações adicionais</h2>
+            <form id="info-form">
+              <div class="form-grid">
+                <div class="form-field"><label for="phone">Telefone</label><input id="phone" name="phone" maxlength="30" placeholder="Ex.: (11) 91234-5678" /></div>
+              </div>
+              <div class="form-actions"><button class="primary-button" id="info-submit" type="submit">Salvar informações</button><p class="form-message" id="info-message" aria-live="polite"></p></div>
+            </form>
+          </section>
+
+          <section class="form-panel" id="tab-foto" aria-labelledby="foto-title" hidden>
+            <h2 id="foto-title">Foto de perfil</h2>
+            <div class="avatar-editor">
+              <div class="avatar-editor__preview" id="avatar-preview">Sem foto</div>
+              <div class="avatar-editor__actions">
+                <label class="secondary-button" for="avatar-input">Escolher foto</label>
+                <input id="avatar-input" type="file" accept="image/*" hidden />
+                <button class="secondary-button" id="remove-avatar-button" type="button">Remover foto</button>
+              </div>
+            </div>
+            <p class="form-message" id="avatar-message" aria-live="polite"></p>
+          </section>
+        </main>
+        <footer><div class="container"><p>LoreRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+      </div>
+    </div>
+    <script src="js/auth-context.js"></script>
+    <script src="js/account-menu.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
+    <script src="js/patient-context.js"></script>
+    <script src="js/auth-repository.js"></script>
+    <script src="js/perfil.js"></script>
+  </body>
+</html>

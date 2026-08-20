@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Agenda de eventos no LoreRoutine." />
+    <title>Agenda | LoreRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <a class="brand" href="index.html">Lore<span>Routine</span></a>
+          <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
+        <nav class="sidebar__nav">
+          <a class="nav-link" href="index.html">Dashboard</a>
+          <a class="nav-link" href="pacientes.html">Paciente</a>
+          <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
+          <a class="nav-link" href="medicamentos.html">Medicamentos</a>
+          <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link nav-link--active" href="agenda.html">Agenda</a>
+          <a class="nav-link" href="historico.html">Histórico</a>
+        </nav>
+        <p class="sidebar__user" id="sidebar-user"></p>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date"></p><div class="account-menu" id="account-menu"></div></div></header>
+
+        <main class="main-content container">
+          <section class="page-header">
+            <h1>Agenda</h1>
+            <p>Cadastre consultas, exames e outros compromissos e acompanhe o mês inteiro em um calendário.</p>
+          </section>
+
+          <section class="history-panel" aria-labelledby="calendar-month-label">
+            <div class="history-panel__header">
+              <div><p class="eyebrow">Agenda</p><h2 id="calendar-month-label">Calendário</h2></div>
+              <div class="calendar__nav">
+                <button class="secondary-button" id="prev-month-button" type="button">← Mês anterior</button>
+                <button class="secondary-button" id="next-month-button" type="button">Próximo mês →</button>
+                <button class="primary-button" id="new-event-button" type="button">+ Cadastrar evento</button>
+              </div>
+            </div>
+
+            <div id="event-form-panel" hidden>
+              <h3 id="form-title">Novo evento</h3>
+              <form id="event-form">
+                <div class="form-grid">
+                  <div class="form-field form-field--full"><label for="title">Título</label><input id="title" name="title" maxlength="120" placeholder="Ex.: Consulta com cardiologista" required /></div>
+                  <div class="form-field"><label for="category">Categoria</label><select id="category" name="category"><option value="">Selecione</option><option>Consulta médica</option><option>Exame</option><option>Aniversário</option><option>Visita</option><option>Outro</option></select></div>
+                  <div class="form-field"><label for="event-date">Data</label><input id="event-date" name="eventDate" type="date" required /></div>
+                  <div class="form-field"><label for="event-time">Horário</label><input id="event-time" name="eventTime" type="time" required /></div>
+                  <div class="form-field form-field--full"><label for="notes">Observações</label><textarea id="notes" name="notes" maxlength="500" placeholder="Inclua orientações importantes"></textarea></div>
+                </div>
+                <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Cadastrar evento</button><button class="secondary-button" id="cancel-button" type="button">Cancelar</button><p class="form-message" id="form-message" aria-live="polite"></p></div>
+              </form>
+            </div>
+
+            <div class="calendar">
+              <div class="calendar__grid calendar__grid--weekdays">
+                <span class="calendar__weekday">Dom</span><span class="calendar__weekday">Seg</span><span class="calendar__weekday">Ter</span>
+                <span class="calendar__weekday">Qua</span><span class="calendar__weekday">Qui</span><span class="calendar__weekday">Sex</span><span class="calendar__weekday">Sáb</span>
+              </div>
+              <div class="calendar__grid" id="calendar-grid"></div>
+            </div>
+          </section>
+
+          <section class="history-panel" aria-labelledby="daily-title">
+            <div class="history-panel__header"><div><p class="eyebrow">Selecionado</p><h2 id="daily-title">Eventos do dia</h2></div><p class="records-count" id="daily-date-label"></p></div>
+            <p class="empty-history" id="empty-daily">Nenhum evento nesta data.</p>
+            <div class="table-wrapper" id="daily-wrapper" hidden><table><thead><tr><th>Horário</th><th>Título</th><th>Categoria</th><th>Status</th><th>Ações</th></tr></thead><tbody id="daily-body"></tbody></table></div>
+          </section>
+        </main>
+        <footer><div class="container"><p>LoreRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+      </div>
+    </div>
+    <script src="js/auth-context.js"></script>
+    <script src="js/account-menu.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
+    <script src="js/patient-context.js"></script>
+    <script src="js/events-repository.js"></script>
+    <script src="js/agenda.js"></script>
+  </body>
+</html>

@@ -10,6 +10,7 @@ const emptyHistory = document.querySelector("#empty-history");
 const recordsCount = document.querySelector("#records-count");
 const filtersForm = document.querySelector("#history-filters");
 const clearFiltersButton = document.querySelector("#clear-filters-button");
+const printButton = document.querySelector("#print-button");
 
 let editingRecordId = null;
 let records = [];
@@ -129,6 +130,15 @@ filtersForm.addEventListener("input", renderHistory);
 clearFiltersButton.addEventListener("click", () => {
   filtersForm.reset();
   renderHistory();
+});
+
+printButton.addEventListener("click", () => {
+  const filters = Object.fromEntries(new FormData(filtersForm).entries());
+  const params = new URLSearchParams({ patientId: patientId || "" });
+  if (filters.startDate) params.set("startDate", filters.startDate);
+  if (filters.endDate) params.set("endDate", filters.endDate);
+  if (filters.shift) params.set("shift", filters.shift);
+  window.open(`historico-impressao.html?${params.toString()}`, "_blank");
 });
 
 historyBody.addEventListener("click", async (event) => {

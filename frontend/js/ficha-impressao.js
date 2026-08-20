@@ -65,7 +65,7 @@ async function render() {
   try {
     const patient = await PatientsRepository.getById(id);
 
-    document.title = `Ficha de ${patient.fullName} | CareRoutine`;
+    document.title = `Ficha de ${patient.fullName} | LoreRoutine`;
     document.querySelector("#sheet-name").textContent = patient.fullName;
     document.querySelector("#sheet-subtitle").textContent =
       `Nascimento: ${formatDate(patient.birthDate)} (${calculateAge(patient.birthDate)} anos) · Emitida em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(new Date())}`;

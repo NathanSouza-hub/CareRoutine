@@ -1,6 +1,7 @@
 const AuthContext = (() => {
-  const STORAGE_KEY = "careroutine:token";
-  const USER_STORAGE_KEY = "careroutine:userName";
+  const STORAGE_KEY = "loreroutine:token";
+  const USER_STORAGE_KEY = "loreroutine:userName";
+  const AVATAR_STORAGE_KEY = "loreroutine:avatar";
 
   function getToken() {
     return localStorage.getItem(STORAGE_KEY) || null;
@@ -8,6 +9,19 @@ const AuthContext = (() => {
 
   function getUserName() {
     return localStorage.getItem(USER_STORAGE_KEY) || "";
+  }
+
+  function setUserName(userName) {
+    if (userName) localStorage.setItem(USER_STORAGE_KEY, userName);
+  }
+
+  function getAvatar() {
+    return localStorage.getItem(AVATAR_STORAGE_KEY) || "";
+  }
+
+  function setAvatar(avatarData) {
+    if (avatarData) localStorage.setItem(AVATAR_STORAGE_KEY, avatarData);
+    else localStorage.removeItem(AVATAR_STORAGE_KEY);
   }
 
   function setSession(token, userName) {
@@ -23,7 +37,8 @@ const AuthContext = (() => {
   function logout() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(USER_STORAGE_KEY);
-    localStorage.removeItem("careroutine:patientId");
+    localStorage.removeItem(AVATAR_STORAGE_KEY);
+    localStorage.removeItem("loreroutine:patientId");
     location.href = "login.html";
   }
 
@@ -34,10 +49,7 @@ const AuthContext = (() => {
   document.addEventListener("DOMContentLoaded", () => {
     const userLabel = document.querySelector("#sidebar-user");
     if (userLabel) userLabel.textContent = getUserName();
-
-    const logoutButton = document.querySelector("#logout-button");
-    if (logoutButton) logoutButton.addEventListener("click", logout);
   });
 
-  return Object.freeze({ authHeader, getToken, getUserName, logout, setSession });
+  return Object.freeze({ authHeader, getAvatar, getToken, getUserName, logout, setAvatar, setSession, setUserName });
 })();

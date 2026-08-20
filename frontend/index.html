@@ -3,52 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Painel do dia no CareRoutine." />
-    <title>CareRoutine</title>
+    <meta name="description" content="Painel do dia no LoreRoutine." />
+    <title>LoreRoutine</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="index.html">Care<span>Routine</span></a>
-        <select class="patient-switcher" id="patient-switcher"></select>
+        <div class="sidebar__header">
+          <a class="brand" href="index.html">Lore<span>Routine</span></a>
+          <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
         <nav class="sidebar__nav">
           <a class="nav-link nav-link--active" href="index.html">Dashboard</a>
           <a class="nav-link" href="pacientes.html">Paciente</a>
           <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
           <a class="nav-link" href="medicamentos.html">Medicamentos</a>
           <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="agenda.html">Agenda</a>
           <a class="nav-link" href="historico.html">Histórico</a>
         </nav>
         <p class="sidebar__user" id="sidebar-user"></p>
-        <button class="sidebar__logout" id="logout-button" type="button">Sair</button>
       </aside>
 
       <div class="main-area">
         <header class="topbar">
           <div class="container topbar__content">
+            <div class="notifications" id="notifications">
+              <button class="notifications__button" id="notifications-button" type="button" aria-label="Notificações">
+                🔔<span class="notifications__badge" id="notifications-badge" hidden>0</span>
+              </button>
+              <div class="notifications__panel" id="notifications-panel" hidden>
+                <p class="notifications__title">Eventos próximos</p>
+                <p class="notifications__empty" id="notifications-empty">Nenhum evento nos próximos dias.</p>
+                <ul class="notifications__list" id="notifications-list"></ul>
+              </div>
+            </div>
             <p class="current-date" id="current-date" aria-live="polite"></p>
+            <div class="account-menu" id="account-menu"></div>
           </div>
         </header>
 
         <main class="main-content">
           <div class="container">
             <section class="page-header">
-              <h1>Olá! Aqui está o que fazer hoje</h1>
-              <p>Uma lista só, com tudo que precisa ser feito hoje.</p>
+              <h1 id="dashboard-title">Olá!</h1>
             </section>
 
             <p class="form-message" id="dashboard-message" aria-live="polite"></p>
 
-            <section class="today-panel" aria-labelledby="today-title">
+            <div class="tabs" role="tablist">
+              <button class="tab-button" id="tab-button-agenda" type="button" data-tab="agenda">Agenda do dia</button>
+              <button class="tab-button" id="tab-button-vitais" type="button" data-tab="vitais">Sinais vitais</button>
+            </div>
+
+            <section class="today-panel" id="tab-agenda" aria-labelledby="today-title">
               <div class="history-panel__header">
-                <div><p class="eyebrow">Hoje</p><h2 id="today-title">Tarefas do dia</h2></div>
+                <div><p class="eyebrow">Agenda do dia</p><h2 id="today-title">Tarefas do dia</h2></div>
+                <div class="form-field"><label for="tasks-date">Data</label><input id="tasks-date" type="date" /></div>
               </div>
               <p class="empty-history" id="today-empty">Nenhuma tarefa programada para hoje.</p>
               <ul class="today-list" id="today-list"></ul>
             </section>
 
-            <section class="today-panel" aria-labelledby="vitals-today-title">
+            <section class="today-panel" id="tab-vitais" aria-labelledby="vitals-today-title" hidden>
               <div class="history-panel__header">
                 <div><p class="eyebrow">Sinais vitais</p><h2 id="vitals-today-title">Registros de hoje</h2></div>
                 <a class="back-link" href="sinais-vitais.html">Registrar →</a>
@@ -59,15 +78,18 @@
           </div>
         </main>
 
-        <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+        <footer><div class="container"><p>LoreRoutine — apoio para o cuidado cotidiano.</p></div></footer>
       </div>
     </div>
 
     <script src="js/auth-context.js"></script>
+    <script src="js/account-menu.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
     <script src="js/patient-context.js"></script>
     <script src="js/routines-repository.js"></script>
     <script src="js/medications-repository.js"></script>
     <script src="js/vitals-repository.js"></script>
+    <script src="js/events-repository.js"></script>
     <script src="js/dashboard.js"></script>
   </body>
 </html>

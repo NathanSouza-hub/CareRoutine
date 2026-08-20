@@ -1,5 +1,5 @@
 const PatientContext = (() => {
-  const STORAGE_KEY = "careroutine:patientId";
+  const STORAGE_KEY = "loreroutine:patientId";
   const API_URL = "http://localhost:3000/api/patients";
 
   function getCurrentId() {

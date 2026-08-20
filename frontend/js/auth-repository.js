@@ -1,12 +1,17 @@
 const AuthRepository = (() => {
   const API_URL = "http://localhost:3000/api/auth";
 
-  async function request(path, data) {
+  const hasAuthContext = typeof AuthContext !== "undefined";
+
+  async function request(path, options = {}) {
     const response = await fetch(`${API_URL}/${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      ...options,
+      headers: { "Content-Type": "application/json", ...(hasAuthContext ? AuthContext.authHeader() : {}), ...options.headers },
     });
+    if (response.status === 401 && hasAuthContext && path !== "login" && path !== "signup") {
+      AuthContext.logout();
+      throw new Error("Sessão expirada");
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       throw new Error(body.details ? Object.values(body.details)[0] : body.error || "Falha ao acessar a API");
@@ -14,8 +19,12 @@ const AuthRepository = (() => {
     return body.data;
   }
 
-  async function signUp(data) { return request("signup", data); }
-  async function logIn(data) { return request("login", data); }
+  async function signUp(data) { return request("signup", { method: "POST", body: JSON.stringify(data) }); }
+  async function logIn(data) { return request("login", { method: "POST", body: JSON.stringify(data) }); }
+  async function getProfile() { return request("profile"); }
+  async function updateProfile(data) { return request("profile", { method: "PUT", body: JSON.stringify(data) }); }
+  async function changePassword(data) { return request("profile/password", { method: "PUT", body: JSON.stringify(data) }); }
+  async function updateAvatar(avatarData) { return request("profile/avatar", { method: "PUT", body: JSON.stringify({ avatarData }) }); }
 
-  return Object.freeze({ logIn, signUp });
+  return Object.freeze({ changePassword, getProfile, logIn, signUp, updateAvatar, updateProfile });
 })();

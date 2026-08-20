@@ -16,8 +16,8 @@ form.addEventListener("submit", async (event) => {
 
   try {
     const result = await AuthRepository.signUp(data);
-    localStorage.setItem("careroutine:token", result.token);
-    localStorage.setItem("careroutine:userName", result.user.name);
+    localStorage.setItem("loreroutine:token", result.token);
+    localStorage.setItem("loreroutine:userName", result.user.name);
     location.href = "index.html";
   } catch (error) {
     message.textContent = error.message;

@@ -1,4 +1,4 @@
-# CareRoutine
+# LoreRoutine
 
 Aplicação para centralizar e simplificar a organização da rotina diária de
 cuidados de uma pessoa idosa.
@@ -13,6 +13,7 @@ simples, organizada e acessível ao cuidador.
 - Sinais vitais
 - Medicamentos
 - Rotina diária
+- Agenda
 
 ## Estrutura inicial
 
@@ -36,4 +37,4 @@ crescem, o código é separado por responsabilidade.
 
 ## Status
 
-Módulos de sinais vitais, medicamentos e rotinas integrados à API e ao PostgreSQL.
+Módulos de sinais vitais, medicamentos, rotinas e agenda integrados à API e ao PostgreSQL.

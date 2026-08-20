@@ -13,6 +13,10 @@ const createRoutinesController = require("./controllers/routines-controller");
 const routinesRepository = require("./repositories/routines-repository");
 const createRoutinesRouter = require("./routes/routines-routes");
 const createRoutinesService = require("./services/routines-service");
+const createEventsController = require("./controllers/events-controller");
+const eventsRepository = require("./repositories/events-repository");
+const createEventsRouter = require("./routes/events-routes");
+const createEventsService = require("./services/events-service");
 const createPatientsController = require("./controllers/patients-controller");
 const patientsRepository = require("./repositories/patients-repository");
 const createPatientsRouter = require("./routes/patients-routes");
@@ -26,13 +30,12 @@ const createRequireAuth = require("./middleware/require-auth");
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 
 const authService = createAuthService(usersRepository);
 const authController = createAuthController(authService);
-app.use("/api/auth", createAuthRouter(authController));
-
 const requireAuth = createRequireAuth(authService);
+app.use("/api/auth", createAuthRouter(authController, requireAuth));
 
 const vitalsService = createVitalsService(vitalsRepository);
 const vitalsController = createVitalsController(vitalsService);
@@ -51,10 +54,14 @@ const patientsService = createPatientsService(patientsRepository);
 const patientsController = createPatientsController(patientsService);
 app.use("/api/patients", requireAuth, createPatientsRouter(patientsController));
 
+const eventsService = createEventsService(eventsRepository);
+const eventsController = createEventsController(eventsService);
+app.use("/api/events", requireAuth, createEventsRouter(eventsController));
+
 app.get("/health", (request, response) => {
   response.status(200).json({
     status: "ok",
-    service: "CareRoutine API",
+    service: "LoreRoutine API",
   });
 });
 

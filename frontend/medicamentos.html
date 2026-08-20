@@ -3,31 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Acompanhamento de medicamentos no CareRoutine." />
-    <title>Medicamentos | CareRoutine</title>
+    <meta name="description" content="Acompanhamento de medicamentos no LoreRoutine." />
+    <title>Medicamentos | LoreRoutine</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="index.html">Care<span>Routine</span></a>
-        <select class="patient-switcher" id="patient-switcher"></select>
+        <div class="sidebar__header">
+          <a class="brand" href="index.html">Lore<span>Routine</span></a>
+          <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
         <nav class="sidebar__nav">
           <a class="nav-link" href="index.html">Dashboard</a>
           <a class="nav-link" href="pacientes.html">Paciente</a>
           <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
           <a class="nav-link nav-link--active" href="medicamentos.html">Medicamentos</a>
           <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="agenda.html">Agenda</a>
           <a class="nav-link" href="historico.html">Histórico</a>
         </nav>
         <p class="sidebar__user" id="sidebar-user"></p>
-        <button class="sidebar__logout" id="logout-button" type="button">Sair</button>
       </aside>
 
       <div class="main-area">
         <header class="topbar">
           <div class="container topbar__content">
             <p class="current-date" id="current-date"></p>
+            <div class="account-menu" id="account-menu"></div>
           </div>
         </header>
 
@@ -37,7 +41,13 @@
         <p>Cadastre tratamentos recorrentes e acompanhe cada dose do dia.</p>
       </section>
 
-      <section class="form-panel" aria-labelledby="form-title">
+      <div class="tabs" role="tablist">
+        <button class="tab-button" id="tab-button-medicamento" type="button" data-tab="medicamento">Medicamento</button>
+        <button class="tab-button" id="tab-button-acompanhamento" type="button" data-tab="acompanhamento">Acompanhamento</button>
+        <button class="tab-button" id="tab-button-configuracao" type="button" data-tab="configuracao">Configuração</button>
+      </div>
+
+      <section class="form-panel" id="tab-medicamento" aria-labelledby="form-title">
         <h2 id="form-title">Novo tratamento</h2>
         <form id="medication-form">
           <div class="form-grid">
@@ -49,10 +59,25 @@
               <label for="dosage">Dosagem</label>
               <input id="dosage" name="dosage" maxlength="80" placeholder="Ex.: 50 mg" required />
             </div>
+            <div class="form-field">
+              <label for="frequency">Frequência</label>
+              <select id="frequency" name="frequency">
+                <option value="custom">Personalizado</option>
+                <option value="4">A cada 4 horas</option>
+                <option value="6">A cada 6 horas</option>
+                <option value="8">A cada 8 horas</option>
+                <option value="12">A cada 12 horas</option>
+                <option value="24">1x ao dia</option>
+              </select>
+            </div>
+            <div class="form-field" id="first-dose-field" hidden>
+              <label for="first-dose-time">Primeiro horário</label>
+              <input id="first-dose-time" type="time" />
+            </div>
             <div class="form-field form-field--full">
               <label for="times">Horários diários</label>
               <input id="times" name="times" placeholder="Ex.: 08:00, 20:00" required />
-              <small>Separe vários horários por vírgula.</small>
+              <small id="times-hint">Separe vários horários por vírgula.</small>
             </div>
             <div class="form-field">
               <label for="start-date">Data inicial</label>
@@ -78,7 +103,7 @@
         </form>
       </section>
 
-      <section class="history-panel" aria-labelledby="daily-title">
+      <section class="history-panel" id="tab-acompanhamento" aria-labelledby="daily-title" hidden>
         <div class="history-panel__header">
           <div><p class="eyebrow">Acompanhamento</p><h2 id="daily-title">Doses do dia</h2></div>
           <div class="form-field"><label for="daily-date">Data</label><input id="daily-date" type="date" /></div>
@@ -89,7 +114,7 @@
         </div>
       </section>
 
-      <section class="history-panel" aria-labelledby="treatments-title">
+      <section class="history-panel" id="tab-configuracao" aria-labelledby="treatments-title" hidden>
         <div class="history-panel__header"><div><p class="eyebrow">Configuração</p><h2 id="treatments-title">Tratamentos</h2></div><p class="records-count" id="treatments-count"></p></div>
         <p class="empty-history" id="empty-treatments">Nenhum tratamento cadastrado.</p>
         <div class="table-wrapper" id="treatments-wrapper" hidden>
@@ -97,10 +122,12 @@
         </div>
       </section>
         </main>
-        <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+        <footer><div class="container"><p>LoreRoutine — apoio para o cuidado cotidiano.</p></div></footer>
       </div>
     </div>
     <script src="js/auth-context.js"></script>
+    <script src="js/account-menu.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
     <script src="js/patient-context.js"></script>
     <script src="js/medications-repository.js"></script>
     <script src="js/medications.js"></script>

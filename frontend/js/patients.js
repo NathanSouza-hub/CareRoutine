@@ -7,8 +7,19 @@ const patientsBody = document.querySelector("#patients-body");
 const patientsWrapper = document.querySelector("#patients-wrapper");
 const emptyPatients = document.querySelector("#empty-patients");
 const patientsCount = document.querySelector("#patients-count");
+const newPatientButton = document.querySelector("#new-patient-button");
+const tabButtons = document.querySelectorAll("[data-tab]");
+const tabFicha = document.querySelector("#tab-ficha");
+const tabCadastrados = document.querySelector("#tab-cadastrados");
 let patients = [];
 let editingId = null;
+
+function showTab(name) {
+  tabFicha.hidden = name !== "ficha";
+  tabCadastrados.hidden = name !== "cadastrados";
+  tabButtons.forEach((btn) => btn.classList.toggle("tab-button--active", btn.dataset.tab === name));
+  if (name === "ficha") tabFicha.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 function formData() {
   const data = Object.fromEntries(new FormData(form).entries());
@@ -58,6 +69,7 @@ form.addEventListener("submit", async (event) => {
       await PatientsRepository.update(editingId, formData());
       finishEditing("Paciente atualizado.");
       await loadPatients();
+      showTab("cadastrados");
     } else {
       const created = await PatientsRepository.create(formData());
       PatientContext.setCurrentId(String(created.id));
@@ -77,7 +89,7 @@ patientsBody.addEventListener("click", async (event) => {
     });
     form.elements.isActive.checked = item.isActive;
     activeField.hidden = false; cancelButton.hidden = false; submitButton.textContent = "Salvar alterações";
-    form.scrollIntoView({ behavior: "smooth" });
+    showTab("ficha");
   }
   if (target.dataset.action === "print") {
     window.open(`ficha-impressao.html?id=${target.dataset.id}`, "_blank");
@@ -91,6 +103,8 @@ patientsBody.addEventListener("click", async (event) => {
   }
 });
 
-cancelButton.addEventListener("click", () => finishEditing());
+cancelButton.addEventListener("click", () => { finishEditing(); showTab("cadastrados"); });
+newPatientButton.addEventListener("click", () => { finishEditing(); showTab("ficha"); });
+tabButtons.forEach((btn) => btn.addEventListener("click", () => showTab(btn.dataset.tab)));
 document.querySelector("#current-date").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "full" }).format(new Date());
 loadPatients().catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });

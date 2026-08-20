@@ -1,0 +1,19 @@
+BEGIN;
+
+CREATE TABLE events (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  patient_id BIGINT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  title VARCHAR(120) NOT NULL,
+  category VARCHAR(40),
+  event_date DATE NOT NULL,
+  event_time TIME NOT NULL,
+  notes VARCHAR(500),
+  status VARCHAR(12) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'skipped')),
+  completed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_events_date ON events (event_date);
+
+COMMIT;

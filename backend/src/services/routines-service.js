@@ -21,7 +21,6 @@ function validateRoutine(input, editing = false) {
   const time = typeof input.time === "string" ? input.time.trim() : "";
   const notes = typeof input.notes === "string" ? input.notes.trim() : "";
   const startDate = typeof input.startDate === "string" ? input.startDate : "";
-  const endDate = typeof input.endDate === "string" && input.endDate ? input.endDate : null;
   const patientId = input.patientId;
 
   if (!title || title.length > 120) details.title = "Informe uma atividade com até 120 caracteres";
@@ -29,12 +28,10 @@ function validateRoutine(input, editing = false) {
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) details.time = "Informe um horário válido";
   if (notes.length > 500) details.notes = "Use no máximo 500 caracteres";
   if (!isDate(startDate)) details.startDate = "Informe uma data inicial válida";
-  if (endDate && !isDate(endDate)) details.endDate = "Informe uma data final válida";
-  if (endDate && isDate(startDate) && endDate < startDate) details.endDate = "A data final não pode ser anterior à inicial";
   if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
   if (Object.keys(details).length) throw new RoutineValidationError(details);
 
-  return { title, category, time, notes: notes || null, startDate, endDate, patientId, isActive: editing ? input.isActive !== false : true };
+  return { title, category, time, notes: notes || null, startDate, patientId, isActive: editing ? input.isActive !== false : true };
 }
 
 function createRoutinesService(repository) {

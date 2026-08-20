@@ -5,7 +5,7 @@ const RoutineValidationError = require("../src/errors/routine-validation-error")
 const createRoutinesService = require("../src/services/routines-service");
 
 function validRoutine(overrides = {}) {
-  return { title: "Caminhada", category: "Atividade física", time: "09:00", notes: "Levar água", startDate: "2026-08-20", endDate: "", patientId: "1", ...overrides };
+  return { title: "Caminhada", category: "Atividade física", time: "09:00", notes: "Levar água", startDate: "2026-08-20", patientId: "1", ...overrides };
 }
 
 describe("routines service", () => {
@@ -16,7 +16,6 @@ describe("routines service", () => {
       async create(data) { received = data; return "4"; },
     });
     assert.deepEqual(await service.create(validRoutine(), "9"), { id: "4" });
-    assert.equal(received.endDate, null);
     assert.equal(received.isActive, true);
   });
 
@@ -33,9 +32,9 @@ describe("routines service", () => {
     await assert.rejects(service.create(validRoutine({ time: "25:00" })), RoutineValidationError);
   });
 
-  it("rejeita período invertido", async () => {
+  it("rejeita data inicial inválida", async () => {
     const service = createRoutinesService({ create: async () => assert.fail() });
-    await assert.rejects(service.create(validRoutine({ endDate: "2026-08-19" })), RoutineValidationError);
+    await assert.rejects(service.create(validRoutine({ startDate: "20/08/2026" })), RoutineValidationError);
   });
 
   it("informa quando a rotina não existe", async () => {

@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE routines DROP COLUMN end_date CASCADE;
+
+COMMIT;

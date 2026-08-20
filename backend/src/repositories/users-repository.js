@@ -1,6 +1,6 @@
 const pool = require("../config/database");
 
-const PUBLIC_FIELDS = `id, name, email`;
+const PUBLIC_FIELDS = `id, name, email, phone, avatar_data AS "avatarData"`;
 
 async function findByEmail(email) {
   const result = await pool.query(
@@ -23,4 +23,35 @@ async function getById(id) {
   return result.rows[0] ?? null;
 }
 
-module.exports = Object.freeze({ create, findByEmail, getById });
+async function getPasswordHash(id) {
+  const result = await pool.query(`SELECT password_hash AS "passwordHash" FROM users WHERE id = $1`, [id]);
+  return result.rows[0] ?? null;
+}
+
+async function updateProfile(id, profile) {
+  const result = await pool.query(
+    `UPDATE users SET name = $1, email = $2, phone = $3, updated_at = CURRENT_TIMESTAMP
+     WHERE id = $4 RETURNING ${PUBLIC_FIELDS}`,
+    [profile.name, profile.email, profile.phone, id],
+  );
+  return result.rows[0] ?? null;
+}
+
+async function updatePassword(id, passwordHash) {
+  await pool.query(
+    `UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+    [passwordHash, id],
+  );
+}
+
+async function updateAvatar(id, avatarData) {
+  const result = await pool.query(
+    `UPDATE users SET avatar_data = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING ${PUBLIC_FIELDS}`,
+    [avatarData, id],
+  );
+  return result.rows[0] ?? null;
+}
+
+module.exports = Object.freeze({
+  create, findByEmail, getById, getPasswordHash, updateAvatar, updatePassword, updateProfile,
+});

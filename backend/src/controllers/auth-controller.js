@@ -14,6 +14,10 @@ function createAuthController(service) {
   return Object.freeze({
     signUp: action(async (request, response) => response.status(201).json({ data: await service.signUp(request.body) })),
     logIn: action(async (request, response) => response.json({ data: await service.logIn(request.body) })),
+    getProfile: action(async (request, response) => response.json({ data: await service.getProfile(request.userId) })),
+    updateProfile: action(async (request, response) => response.json({ data: await service.updateProfile(request.userId, request.body) })),
+    changePassword: action(async (request, response) => { await service.changePassword(request.userId, request.body); response.status(204).send(); }),
+    updateAvatar: action(async (request, response) => response.json({ data: await service.updateAvatar(request.userId, request.body.avatarData) })),
   });
 }
 

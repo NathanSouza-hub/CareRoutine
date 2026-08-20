@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE users ADD COLUMN phone VARCHAR(30);
+ALTER TABLE users ADD COLUMN avatar_data TEXT;
+
+COMMIT;

@@ -3,29 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Histórico de sinais vitais no CareRoutine." />
-    <title>Histórico | CareRoutine</title>
+    <meta name="description" content="Histórico de sinais vitais no LoreRoutine." />
+    <title>Histórico | LoreRoutine</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="index.html">Care<span>Routine</span></a>
-        <select class="patient-switcher" id="patient-switcher"></select>
+        <div class="sidebar__header">
+          <a class="brand" href="index.html">Lore<span>Routine</span></a>
+          <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
         <nav class="sidebar__nav">
           <a class="nav-link" href="index.html">Dashboard</a>
           <a class="nav-link" href="pacientes.html">Paciente</a>
           <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
           <a class="nav-link" href="medicamentos.html">Medicamentos</a>
           <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="agenda.html">Agenda</a>
           <a class="nav-link nav-link--active" href="historico.html">Histórico</a>
         </nav>
         <p class="sidebar__user" id="sidebar-user"></p>
-        <button class="sidebar__logout" id="logout-button" type="button">Sair</button>
       </aside>
 
       <div class="main-area">
-        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date" aria-live="polite"></p></div></header>
+        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date" aria-live="polite"></p><div class="account-menu" id="account-menu"></div></div></header>
 
         <main class="main-content">
           <header class="page-header container">
@@ -70,7 +73,10 @@
           <section class="history-panel container" aria-labelledby="history-title">
             <div class="history-panel__header">
               <div><p class="eyebrow">Acompanhamento</p><h2 id="history-title">Registros de sinais vitais</h2></div>
-              <p id="records-count" class="records-count"></p>
+              <div class="history-panel__header-actions">
+                <p id="records-count" class="records-count"></p>
+                <button class="secondary-button" id="print-button" type="button">Gerar PDF</button>
+              </div>
             </div>
 
             <form class="history-filters" id="history-filters">
@@ -112,11 +118,13 @@
           </section>
         </main>
 
-        <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+        <footer><div class="container"><p>LoreRoutine — apoio para o cuidado cotidiano.</p></div></footer>
       </div>
     </div>
 
     <script src="js/auth-context.js"></script>
+    <script src="js/account-menu.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
     <script src="js/patient-context.js"></script>
     <script src="js/vitals-repository.js"></script>
     <script src="js/historico.js"></script>
