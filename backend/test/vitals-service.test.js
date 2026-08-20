@@ -15,6 +15,7 @@ function validInput(overrides = {}) {
     temperature: "36.5",
     bloodGlucose: "95",
     notes: "Após o repouso",
+    patientId: "1",
     ...overrides,
   };
 }
@@ -42,6 +43,7 @@ describe("vitals service", () => {
       temperature: 36.5,
       bloodGlucose: 95,
       notes: "Após o repouso",
+      patientId: "1",
     });
     assert.equal(result.id, "1");
   });
@@ -123,7 +125,7 @@ describe("vitals service", () => {
     const records = [{ id: "2" }, { id: "1" }];
     const service = createVitalsService({ getAll: async () => records });
 
-    assert.equal(await service.getAll(), records);
+    assert.equal(await service.getAll("1"), records);
   });
 
   it("atualiza um registro válido", async () => {

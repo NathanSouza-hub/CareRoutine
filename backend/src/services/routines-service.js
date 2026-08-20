@@ -8,9 +8,9 @@ function isDate(value) {
   return parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day;
 }
 
-function validateId(value) {
-  if (!/^\d+$/.test(value) || value === "0") {
-    throw new RoutineValidationError({ id: "Identificador inválido" });
+function validateId(value, field = "id") {
+  if (!/^\d+$/.test(String(value ?? "")) || value === "0") {
+    throw new RoutineValidationError({ [field]: "Identificador inválido" });
   }
 }
 
@@ -22,6 +22,7 @@ function validateRoutine(input, editing = false) {
   const notes = typeof input.notes === "string" ? input.notes.trim() : "";
   const startDate = typeof input.startDate === "string" ? input.startDate : "";
   const endDate = typeof input.endDate === "string" && input.endDate ? input.endDate : null;
+  const patientId = input.patientId;
 
   if (!title || title.length > 120) details.title = "Informe uma atividade com até 120 caracteres";
   if (!category || category.length > 40) details.category = "Informe uma categoria válida";
@@ -30,13 +31,17 @@ function validateRoutine(input, editing = false) {
   if (!isDate(startDate)) details.startDate = "Informe uma data inicial válida";
   if (endDate && !isDate(endDate)) details.endDate = "Informe uma data final válida";
   if (endDate && isDate(startDate) && endDate < startDate) details.endDate = "A data final não pode ser anterior à inicial";
+  if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
   if (Object.keys(details).length) throw new RoutineValidationError(details);
 
-  return { title, category, time, notes: notes || null, startDate, endDate, isActive: editing ? input.isActive !== false : true };
+  return { title, category, time, notes: notes || null, startDate, endDate, patientId, isActive: editing ? input.isActive !== false : true };
 }
 
 function createRoutinesService(repository) {
-  async function getAll() { return repository.getAll(); }
+  async function getAll(patientId) {
+    validateId(patientId, "patientId");
+    return repository.getAll(patientId);
+  }
   async function create(input) { return { id: await repository.create(validateRoutine(input ?? {})) }; }
   async function update(id, input) {
     validateId(id);
@@ -46,9 +51,10 @@ function createRoutinesService(repository) {
     validateId(id);
     if (!(await repository.remove(id))) throw new RoutineNotFoundError();
   }
-  async function getDaily(date) {
+  async function getDaily(date, patientId) {
     if (!isDate(date)) throw new RoutineValidationError({ date: "Informe uma data válida" });
-    return repository.getDaily(date);
+    validateId(patientId, "patientId");
+    return repository.getDaily(date, patientId);
   }
   async function setCompletion(id, input) {
     validateId(id);

@@ -1,6 +1,5 @@
-const MedicationsRepository = (() => {
-  const API_URL = "http://localhost:3000/api/medications";
-
+const PatientsRepository = (() => {
+  const API_URL = "http://localhost:3000/api/patients";
   async function request(url, options = {}) {
     const response = await fetch(url, { headers: { "Content-Type": "application/json" }, ...options });
     if (!response.ok) {
@@ -10,17 +9,10 @@ const MedicationsRepository = (() => {
     if (response.status === 204) return null;
     return response.json();
   }
-
-  async function getAll(patientId) { return (await request(`${API_URL}?patientId=${encodeURIComponent(patientId)}`)).data; }
+  async function getAll() { return (await request(API_URL)).data; }
+  async function getById(id) { return (await request(`${API_URL}/${id}`)).data; }
   async function create(data) { return request(API_URL, { method: "POST", body: JSON.stringify(data) }); }
   async function update(id, data) { return request(`${API_URL}/${id}`, { method: "PUT", body: JSON.stringify(data) }); }
   async function remove(id) { return request(`${API_URL}/${id}`, { method: "DELETE" }); }
-  async function getDaily(date, patientId) { return (await request(`${API_URL}/daily?date=${encodeURIComponent(date)}&patientId=${encodeURIComponent(patientId)}`)).data; }
-  async function setAdministration(medicationId, scheduleId, data) {
-    return request(`${API_URL}/${medicationId}/schedules/${scheduleId}/administration`, {
-      method: "PATCH", body: JSON.stringify(data),
-    });
-  }
-
-  return Object.freeze({ create, getAll, getDaily, remove, setAdministration, update });
+  return Object.freeze({ create, getAll, getById, remove, update });
 })();

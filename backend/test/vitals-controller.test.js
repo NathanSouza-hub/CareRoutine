@@ -74,10 +74,28 @@ describe("vitals controller", () => {
     const controller = createVitalsController({ getAll: async () => records });
     const response = createResponse();
 
-    await controller.getAll({}, response, assert.fail);
+    await controller.getAll({ query: { patientId: "1" } }, response, assert.fail);
 
     assert.equal(response.statusCode, 200);
     assert.deepEqual(response.body, { data: records });
+  });
+
+  it("retorna 400 quando o paciente informado é inválido", async () => {
+    const validationError = new ValidationError({ patientId: "Informe um identificador válido" });
+    const controller = createVitalsController({
+      getAll: async () => {
+        throw validationError;
+      },
+    });
+    const response = createResponse();
+
+    await controller.getAll({ query: {} }, response, assert.fail);
+
+    assert.equal(response.statusCode, 400);
+    assert.deepEqual(response.body, {
+      error: validationError.message,
+      details: validationError.details,
+    });
   });
 
   it("retorna 200 com o registro atualizado", async () => {

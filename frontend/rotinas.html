@@ -8,10 +8,25 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <header class="topbar"><div class="container topbar__content"><a class="brand" href="index.html">Care<span>Routine</span></a><p class="current-date" id="current-date"></p></div></header>
-    <main class="container">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="index.html">Care<span>Routine</span></a>
+        <select class="patient-switcher" id="patient-switcher"></select>
+        <nav class="sidebar__nav">
+          <a class="nav-link" href="index.html">Dashboard</a>
+          <a class="nav-link" href="pacientes.html">Paciente</a>
+          <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
+          <a class="nav-link" href="medicamentos.html">Medicamentos</a>
+          <a class="nav-link nav-link--active" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="historico.html">Histórico</a>
+        </nav>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date"></p></div></header>
+
+        <main class="main-content container">
       <section class="page-header">
-        <a class="back-link" href="index.html">← Voltar ao início</a>
         <h1>Rotinas</h1>
         <p>Organize atividades recorrentes e acompanhe o que foi realizado em cada dia.</p>
       </section>
@@ -43,8 +58,11 @@
         <p class="empty-history" id="empty-routines">Nenhuma rotina cadastrada.</p>
         <div class="table-wrapper" id="routines-wrapper" hidden><table><thead><tr><th>Atividade</th><th>Categoria</th><th>Horário</th><th>Período</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="routines-body"></tbody></table></div>
       </section>
-    </main>
-    <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+        </main>
+        <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+      </div>
+    </div>
+    <script src="js/patient-context.js"></script>
     <script src="js/routines-repository.js"></script>
     <script src="js/routines.js"></script>
   </body>

@@ -8,15 +8,29 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <header class="topbar">
-      <div class="container topbar__content">
+    <div class="app-shell">
+      <aside class="sidebar">
         <a class="brand" href="index.html">Care<span>Routine</span></a>
-        <p class="current-date" id="current-date"></p>
-      </div>
-    </header>
-    <main class="container">
+        <select class="patient-switcher" id="patient-switcher"></select>
+        <nav class="sidebar__nav">
+          <a class="nav-link" href="index.html">Dashboard</a>
+          <a class="nav-link" href="pacientes.html">Paciente</a>
+          <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
+          <a class="nav-link nav-link--active" href="medicamentos.html">Medicamentos</a>
+          <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="historico.html">Histórico</a>
+        </nav>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar">
+          <div class="container topbar__content">
+            <p class="current-date" id="current-date"></p>
+          </div>
+        </header>
+
+        <main class="main-content container">
       <section class="page-header">
-        <a class="back-link" href="index.html">← Voltar ao início</a>
         <h1>Medicamentos</h1>
         <p>Cadastre tratamentos recorrentes e acompanhe cada dose do dia.</p>
       </section>
@@ -80,8 +94,11 @@
           <table><thead><tr><th>Medicamento</th><th>Dosagem</th><th>Horários</th><th>Período</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="treatments-body"></tbody></table>
         </div>
       </section>
-    </main>
-    <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+        </main>
+        <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+      </div>
+    </div>
+    <script src="js/patient-context.js"></script>
     <script src="js/medications-repository.js"></script>
     <script src="js/medications.js"></script>
   </body>

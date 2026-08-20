@@ -5,7 +5,7 @@ const RoutineValidationError = require("../src/errors/routine-validation-error")
 const createRoutinesService = require("../src/services/routines-service");
 
 function validRoutine(overrides = {}) {
-  return { title: "Caminhada", category: "Atividade física", time: "09:00", notes: "Levar água", startDate: "2026-08-20", endDate: "", ...overrides };
+  return { title: "Caminhada", category: "Atividade física", time: "09:00", notes: "Levar água", startDate: "2026-08-20", endDate: "", patientId: "1", ...overrides };
 }
 
 describe("routines service", () => {
@@ -35,8 +35,8 @@ describe("routines service", () => {
   it("lista atividades de uma data válida", async () => {
     const items = [{ id: "1" }];
     const service = createRoutinesService({ getDaily: async () => items });
-    assert.equal(await service.getDaily("2026-08-20"), items);
-    await assert.rejects(service.getDaily("20/08/2026"), RoutineValidationError);
+    assert.equal(await service.getDaily("2026-08-20", "1"), items);
+    await assert.rejects(service.getDaily("20/08/2026", "1"), RoutineValidationError);
   });
 
   it("registra uma atividade concluída", async () => {

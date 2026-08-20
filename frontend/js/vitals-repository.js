@@ -44,8 +44,8 @@ const VitalsRepository = (() => {
     return response.json();
   }
 
-  async function getAll() {
-    const body = await request(API_URL);
+  async function getAll(patientId) {
+    const body = await request(`${API_URL}?patientId=${encodeURIComponent(patientId)}`);
     return body.data.map(toLocalRecord);
   }
 

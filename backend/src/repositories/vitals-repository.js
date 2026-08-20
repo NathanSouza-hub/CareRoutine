@@ -15,12 +15,13 @@ const RETURNING_FIELDS = `
   updated_at AS "updatedAt"
 `;
 
-async function getAll() {
+async function getAll(patientId) {
   const result = await pool.query(`
     SELECT ${RETURNING_FIELDS}
     FROM vital_signs
+    WHERE patient_id = $1
     ORDER BY measured_at DESC
-  `);
+  `, [patientId]);
 
   return result.rows;
 }
@@ -36,9 +37,10 @@ async function create(vitalSigns) {
       oxygen_saturation,
       temperature,
       blood_glucose,
-      notes
+      notes,
+      patient_id
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     RETURNING ${RETURNING_FIELDS}
   `;
   const values = [
@@ -51,6 +53,7 @@ async function create(vitalSigns) {
     vitalSigns.temperature,
     vitalSigns.bloodGlucose,
     vitalSigns.notes,
+    vitalSigns.patientId,
   ];
 
   const result = await pool.query(query, values);

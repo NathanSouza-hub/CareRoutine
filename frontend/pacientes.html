@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Cadastro de pacientes no CareRoutine." />
+    <title>Pacientes | CareRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="index.html">Care<span>Routine</span></a>
+        <select class="patient-switcher" id="patient-switcher"></select>
+        <nav class="sidebar__nav">
+          <a class="nav-link" href="index.html">Dashboard</a>
+          <a class="nav-link nav-link--active" href="pacientes.html">Paciente</a>
+          <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
+          <a class="nav-link" href="medicamentos.html">Medicamentos</a>
+          <a class="nav-link" href="rotinas.html">Rotinas</a>
+          <a class="nav-link" href="historico.html">Histórico</a>
+        </nav>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date"></p></div></header>
+
+        <main class="main-content container">
+          <section class="page-header">
+            <h1>Paciente</h1>
+            <p>Mantenha a ficha médica completa para apresentar a qualquer profissional que for atender o paciente.</p>
+          </section>
+
+          <section class="form-panel" aria-labelledby="form-title">
+            <h2 id="form-title">Ficha do paciente</h2>
+            <form id="patient-form">
+              <fieldset class="form-fieldset">
+                <legend>Dados pessoais</legend>
+                <div class="form-grid">
+                  <div class="form-field"><label for="full-name">Nome completo</label><input id="full-name" name="fullName" maxlength="150" required /></div>
+                  <div class="form-field"><label for="birth-date">Data de nascimento</label><input id="birth-date" name="birthDate" type="date" required /></div>
+                  <div class="form-field"><label for="sex">Sexo</label><select id="sex" name="sex"><option value="">Não informado</option><option>Feminino</option><option>Masculino</option><option>Outro</option></select></div>
+                  <div class="form-field"><label for="cpf">CPF</label><input id="cpf" name="cpf" maxlength="20" /></div>
+                  <div class="form-field"><label for="health-card-number">Cartão SUS</label><input id="health-card-number" name="healthCardNumber" maxlength="40" /></div>
+                  <div class="form-field"><label for="health-insurance">Convênio</label><input id="health-insurance" name="healthInsurance" maxlength="120" /></div>
+                  <div class="form-field"><label for="phone">Telefone</label><input id="phone" name="phone" maxlength="30" /></div>
+                  <div class="form-field form-field--full"><label for="address">Endereço</label><input id="address" name="address" maxlength="255" /></div>
+                </div>
+              </fieldset>
+
+              <fieldset class="form-fieldset">
+                <legend>Contato de emergência</legend>
+                <div class="form-grid">
+                  <div class="form-field"><label for="emergency-contact-name">Nome</label><input id="emergency-contact-name" name="emergencyContactName" maxlength="120" /></div>
+                  <div class="form-field"><label for="emergency-contact-relationship">Parentesco</label><input id="emergency-contact-relationship" name="emergencyContactRelationship" maxlength="60" /></div>
+                  <div class="form-field"><label for="emergency-contact-phone">Telefone</label><input id="emergency-contact-phone" name="emergencyContactPhone" maxlength="30" /></div>
+                </div>
+              </fieldset>
+
+              <fieldset class="form-fieldset">
+                <legend>Responsável</legend>
+                <div class="form-grid">
+                  <div class="form-field"><label for="responsible-name">Nome</label><input id="responsible-name" name="responsibleName" maxlength="120" /></div>
+                  <div class="form-field"><label for="responsible-phone">Telefone</label><input id="responsible-phone" name="responsiblePhone" maxlength="30" /></div>
+                </div>
+              </fieldset>
+
+              <fieldset class="form-fieldset">
+                <legend>Dados médicos</legend>
+                <div class="form-grid">
+                  <div class="form-field"><label for="blood-type">Tipo sanguíneo</label><input id="blood-type" name="bloodType" maxlength="5" placeholder="Ex.: O+" /></div>
+                  <div class="form-field"><label for="mobility">Mobilidade</label><select id="mobility" name="mobility"><option value="">Não informado</option><option>Independente</option><option>Com auxílio</option><option>Cadeirante</option><option>Acamado</option></select></div>
+                  <div class="form-field form-field--full"><label for="allergies">Alergias</label><textarea id="allergies" name="allergies" maxlength="500"></textarea></div>
+                  <div class="form-field form-field--full"><label for="chronic-conditions">Condições crônicas / diagnósticos</label><textarea id="chronic-conditions" name="chronicConditions" maxlength="1000"></textarea></div>
+                  <div class="form-field form-field--full"><label for="surgical-history">Cirurgias anteriores</label><textarea id="surgical-history" name="surgicalHistory" maxlength="1000"></textarea></div>
+                  <div class="form-field form-field--full"><label for="dietary-restrictions">Restrições alimentares</label><textarea id="dietary-restrictions" name="dietaryRestrictions" maxlength="500"></textarea></div>
+                  <div class="form-field form-field--full"><label for="current-medications-notes">Medicações em uso (resumo)</label><textarea id="current-medications-notes" name="currentMedicationsNotes" maxlength="1000" placeholder="Além do que já está cadastrado em Medicamentos"></textarea></div>
+                </div>
+              </fieldset>
+
+              <fieldset class="form-fieldset">
+                <legend>Médico responsável</legend>
+                <div class="form-grid">
+                  <div class="form-field"><label for="doctor-name">Nome</label><input id="doctor-name" name="doctorName" maxlength="120" /></div>
+                  <div class="form-field"><label for="doctor-specialty">Especialidade</label><input id="doctor-specialty" name="doctorSpecialty" maxlength="120" /></div>
+                  <div class="form-field"><label for="doctor-phone">Telefone</label><input id="doctor-phone" name="doctorPhone" maxlength="30" /></div>
+                </div>
+              </fieldset>
+
+              <fieldset class="form-fieldset">
+                <legend>Plano de cuidados</legend>
+                <div class="form-grid">
+                  <div class="form-field form-field--full"><label for="care-plan-notes">Observações gerais</label><textarea id="care-plan-notes" name="carePlanNotes" maxlength="1000"></textarea></div>
+                  <div class="form-field" id="active-field" hidden><label><input id="is-active" name="isActive" type="checkbox" checked /> Paciente ativo</label></div>
+                </div>
+              </fieldset>
+
+              <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Cadastrar paciente</button><button class="secondary-button" id="cancel-button" type="button" hidden>Cancelar edição</button><p class="form-message" id="form-message" aria-live="polite"></p></div>
+            </form>
+          </section>
+
+          <section class="history-panel" aria-labelledby="patients-title">
+            <div class="history-panel__header"><div><p class="eyebrow">Cadastrados</p><h2 id="patients-title">Pacientes</h2></div><p class="records-count" id="patients-count"></p></div>
+            <p class="empty-history" id="empty-patients">Nenhum paciente cadastrado.</p>
+            <div class="table-wrapper" id="patients-wrapper" hidden>
+              <table><thead><tr><th>Nome</th><th>Nascimento</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="patients-body"></tbody></table>
+            </div>
+          </section>
+        </main>
+        <footer><div class="container"><p>CareRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+      </div>
+    </div>
+    <script src="js/patient-context.js"></script>
+    <script src="js/patients-repository.js"></script>
+    <script src="js/patients.js"></script>
+  </body>
+</html>

@@ -24,6 +24,7 @@ function validateMedication(input, editing = false) {
   const times = Array.isArray(input.times)
     ? [...new Set(input.times.map((time) => String(time).trim()))].sort()
     : [];
+  const patientId = input.patientId;
 
   if (!name || name.length > 120) details.name = "Informe um nome com até 120 caracteres";
   if (!dosage || dosage.length > 80) details.dosage = "Informe uma dosagem com até 80 caracteres";
@@ -36,6 +37,7 @@ function validateMedication(input, editing = false) {
   if (!times.length || times.some((time) => !/^([01]\d|2[0-3]):[0-5]\d$/.test(time))) {
     details.times = "Informe ao menos um horário válido";
   }
+  if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
 
   if (Object.keys(details).length) throw new MedicationValidationError(details);
 
@@ -46,13 +48,15 @@ function validateMedication(input, editing = false) {
     startDate,
     endDate,
     times,
+    patientId,
     isActive: editing ? input.isActive !== false : true,
   };
 }
 
 function createMedicationsService(repository) {
-  async function getAll() {
-    return repository.getAll();
+  async function getAll(patientId) {
+    validateId(patientId, "patientId");
+    return repository.getAll(patientId);
   }
 
   async function create(input) {
@@ -72,9 +76,10 @@ function createMedicationsService(repository) {
     if (!(await repository.remove(id))) throw new MedicationNotFoundError();
   }
 
-  async function getDaily(date) {
+  async function getDaily(date, patientId) {
     if (!isDate(date)) throw new MedicationValidationError({ date: "Informe uma data válida" });
-    return repository.getDaily(date);
+    validateId(patientId, "patientId");
+    return repository.getDaily(date, patientId);
   }
 
   async function setAdministration(medicationId, scheduleId, input) {

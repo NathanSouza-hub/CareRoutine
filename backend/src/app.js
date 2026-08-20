@@ -13,6 +13,10 @@ const createRoutinesController = require("./controllers/routines-controller");
 const routinesRepository = require("./repositories/routines-repository");
 const createRoutinesRouter = require("./routes/routines-routes");
 const createRoutinesService = require("./services/routines-service");
+const createPatientsController = require("./controllers/patients-controller");
+const patientsRepository = require("./repositories/patients-repository");
+const createPatientsRouter = require("./routes/patients-routes");
+const createPatientsService = require("./services/patients-service");
 
 const app = express();
 
@@ -31,6 +35,10 @@ app.use("/api/medications", createMedicationsRouter(medicationsController));
 const routinesService = createRoutinesService(routinesRepository);
 const routinesController = createRoutinesController(routinesService);
 app.use("/api/routines", createRoutinesRouter(routinesController));
+
+const patientsService = createPatientsService(patientsRepository);
+const patientsController = createPatientsController(patientsService);
+app.use("/api/patients", createPatientsRouter(patientsController));
 
 app.get("/health", (request, response) => {
   response.status(200).json({

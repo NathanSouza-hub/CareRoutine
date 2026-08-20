@@ -12,6 +12,7 @@ function validMedication(overrides = {}) {
     startDate: "2026-08-18",
     endDate: "",
     times: ["20:00", "08:00", "08:00"],
+    patientId: "1",
     ...overrides,
   };
 }
@@ -61,8 +62,8 @@ describe("medications service", () => {
   it("lista somente a agenda da data válida", async () => {
     const doses = [{ scheduleId: "2" }];
     const service = createMedicationsService({ getDaily: async () => doses });
-    assert.equal(await service.getDaily("2026-08-18"), doses);
-    await assert.rejects(service.getDaily("18/08/2026"), MedicationValidationError);
+    assert.equal(await service.getDaily("2026-08-18", "1"), doses);
+    await assert.rejects(service.getDaily("18/08/2026", "1"), MedicationValidationError);
   });
 
   it("registra uma dose tomada no horário pertencente ao medicamento", async () => {

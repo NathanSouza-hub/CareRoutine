@@ -27,10 +27,10 @@ function createVitalsController(vitalsService) {
 
   async function getAll(request, response, next) {
     try {
-      const vitalSigns = await vitalsService.getAll();
+      const vitalSigns = await vitalsService.getAll(request.query.patientId);
       response.status(200).json({ data: vitalSigns });
     } catch (error) {
-      next(error);
+      if (!handleKnownError(error, response)) next(error);
     }
   }
 

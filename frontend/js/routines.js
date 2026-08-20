@@ -13,6 +13,7 @@ const emptyRoutines = document.querySelector("#empty-routines");
 const routinesCount = document.querySelector("#routines-count");
 let routines = [];
 let editingId = null;
+let patientId = null;
 
 function localDate() {
   const now = new Date();
@@ -21,7 +22,7 @@ function localDate() {
 
 function formData() {
   const data = Object.fromEntries(new FormData(form).entries());
-  return { ...data, isActive: form.elements.isActive.checked };
+  return { ...data, patientId, isActive: form.elements.isActive.checked };
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
@@ -42,10 +43,10 @@ function renderRoutines() {
   });
 }
 
-async function loadRoutines() { routines = await RoutinesRepository.getAll(); renderRoutines(); }
+async function loadRoutines() { routines = await RoutinesRepository.getAll(patientId); renderRoutines(); }
 
 async function loadDaily() {
-  const activities = await RoutinesRepository.getDaily(dailyDate.value);
+  const activities = await RoutinesRepository.getDaily(dailyDate.value, patientId);
   dailyBody.replaceChildren(); emptyDaily.hidden = activities.length > 0; dailyWrapper.hidden = activities.length === 0;
   const labels = { pending: "Pendente", completed: "Concluída", skipped: "Não realizada" };
   activities.forEach((activity) => {
@@ -96,4 +97,13 @@ cancelButton.addEventListener("click", () => finishEditing());
 dailyDate.addEventListener("change", () => loadDaily().catch((error) => { message.textContent = error.message; }));
 document.querySelector("#current-date").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "full" }).format(new Date());
 dailyDate.value = localDate(); form.elements.startDate.value = localDate();
-Promise.all([loadRoutines(), loadDaily()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
+
+PatientContext.ready().then((id) => {
+  patientId = id;
+  if (!patientId) {
+    message.textContent = "Cadastre um paciente em \"Paciente\" para começar.";
+    submitButton.disabled = true;
+    return;
+  }
+  Promise.all([loadRoutines(), loadDaily()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
+});

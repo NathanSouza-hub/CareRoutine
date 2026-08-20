@@ -1,6 +1,6 @@
 const pool = require("../config/database");
 
-async function getAll() {
+async function getAll(patientId) {
   const result = await pool.query(`
     SELECT
       m.id,
@@ -26,9 +26,10 @@ async function getAll() {
       ) AS schedules
     FROM medications m
     LEFT JOIN medication_schedules s ON s.medication_id = m.id AND s.is_active = TRUE
+    WHERE m.patient_id = $1
     GROUP BY m.id
     ORDER BY m.is_active DESC, m.name
-  `);
+  `, [patientId]);
   return result.rows;
 }
 
@@ -37,8 +38,8 @@ async function create(medication) {
   try {
     await client.query("BEGIN");
     const result = await client.query(
-      `INSERT INTO medications (name, dosage, instructions, start_date, end_date)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO medications (name, dosage, instructions, start_date, end_date, patient_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id`,
       [
         medication.name,
@@ -46,6 +47,7 @@ async function create(medication) {
         medication.instructions,
         medication.startDate,
         medication.endDate,
+        medication.patientId,
       ],
     );
     const id = result.rows[0].id;
@@ -116,7 +118,7 @@ async function remove(id) {
   return result.rowCount > 0;
 }
 
-async function getDaily(date) {
+async function getDaily(date, patientId) {
   const result = await pool.query(
     `SELECT
        m.id AS "medicationId", m.name, m.dosage, m.instructions,
@@ -130,8 +132,9 @@ async function getDaily(date) {
      WHERE m.is_active = TRUE
        AND m.start_date <= $1
        AND (m.end_date IS NULL OR m.end_date >= $1)
+       AND m.patient_id = $2
      ORDER BY s.scheduled_time, m.name`,
-    [date],
+    [date, patientId],
   );
   return result.rows;
 }

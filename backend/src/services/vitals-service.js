@@ -40,9 +40,10 @@ function parseOptionalNumber(value, field, details, rules) {
   return hasValue(value) ? parseNumber(value, field, details, rules) : null;
 }
 
-function validateAndMap(input) {
+function validateAndMap(input, editing = false) {
   const details = {};
   const date = typeof input.date === "string" ? input.date.trim() : "";
+  const patientId = input.patientId;
   const time = typeof input.time === "string" ? input.time.trim() : "";
   const shift = typeof input.shift === "string" ? input.shift.trim() : "";
   const bloodPressure =
@@ -86,6 +87,7 @@ function validateAndMap(input) {
 
   const notes = typeof input.notes === "string" ? input.notes.trim() : "";
   if (notes.length > 500) details.notes = "Deve ter no máximo 500 caracteres";
+  if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
 
   if (Object.keys(details).length > 0) throw new ValidationError(details);
 
@@ -99,13 +101,14 @@ function validateAndMap(input) {
     temperature,
     bloodGlucose,
     notes: notes || null,
+    patientId,
   };
 }
 
 function createVitalsService(repository) {
-  function validateId(id) {
-    if (!/^\d+$/.test(id) || id === "0") {
-      throw new ValidationError({ id: "Informe um identificador válido" });
+  function validateId(id, field = "id") {
+    if (!/^\d+$/.test(String(id ?? "")) || id === "0") {
+      throw new ValidationError({ [field]: "Informe um identificador válido" });
     }
   }
 
@@ -113,13 +116,14 @@ function createVitalsService(repository) {
     return repository.create(validateAndMap(input ?? {}));
   }
 
-  async function getAll() {
-    return repository.getAll();
+  async function getAll(patientId) {
+    validateId(patientId, "patientId");
+    return repository.getAll(patientId);
   }
 
   async function update(id, input) {
     validateId(id);
-    const updatedRecord = await repository.update(id, validateAndMap(input ?? {}));
+    const updatedRecord = await repository.update(id, validateAndMap(input ?? {}, true));
     if (!updatedRecord) throw new NotFoundError();
     return updatedRecord;
   }

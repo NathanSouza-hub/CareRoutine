@@ -1,21 +1,23 @@
 const pool = require("../config/database");
 
-async function getAll() {
+async function getAll(patientId) {
   const result = await pool.query(`
     SELECT id, title, category, to_char(scheduled_time, 'HH24:MI') AS time,
       notes, to_char(start_date, 'YYYY-MM-DD') AS "startDate",
       CASE WHEN end_date IS NULL THEN NULL ELSE to_char(end_date, 'YYYY-MM-DD') END AS "endDate",
       is_active AS "isActive"
     FROM routines
-    ORDER BY is_active DESC, scheduled_time, title`);
+    WHERE patient_id = $1
+    ORDER BY is_active DESC, scheduled_time, title`,
+    [patientId]);
   return result.rows;
 }
 
 async function create(routine) {
   const result = await pool.query(
-    `INSERT INTO routines (title, category, scheduled_time, notes, start_date, end_date)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-    [routine.title, routine.category, routine.time, routine.notes, routine.startDate, routine.endDate],
+    `INSERT INTO routines (title, category, scheduled_time, notes, start_date, end_date, patient_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+    [routine.title, routine.category, routine.time, routine.notes, routine.startDate, routine.endDate, routine.patientId],
   );
   return result.rows[0].id;
 }
@@ -35,7 +37,7 @@ async function remove(id) {
   return result.rowCount > 0;
 }
 
-async function getDaily(date) {
+async function getDaily(date, patientId) {
   const result = await pool.query(
     `SELECT r.id, r.title, r.category, to_char(r.scheduled_time, 'HH24:MI') AS time,
       r.notes, COALESCE(c.status, 'pending') AS status, c.completed_at AS "completedAt"
@@ -43,8 +45,9 @@ async function getDaily(date) {
      LEFT JOIN routine_completions c ON c.routine_id = r.id AND c.scheduled_date = $1
      WHERE r.is_active = TRUE AND r.start_date <= $1
        AND (r.end_date IS NULL OR r.end_date >= $1)
+       AND r.patient_id = $2
      ORDER BY r.scheduled_time, r.title`,
-    [date],
+    [date, patientId],
   );
   return result.rows;
 }
