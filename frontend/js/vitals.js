@@ -147,6 +147,7 @@ function renderHistory() {
       createCell(record.temperature ? `${record.temperature} °C` : "—"),
       createCell(record.bloodGlucose ? `${record.bloodGlucose} mg/dL` : "—"),
       createCell(record.notes),
+      createCell(record.authorProfileName),
       createActionsCell(record.id),
     );
     historyBody.append(row);
