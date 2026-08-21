@@ -45,7 +45,7 @@ function renderPatients() {
   emptyPatients.hidden = patients.length > 0; patientsWrapper.hidden = patients.length === 0;
   patients.forEach((item) => {
     const row = document.createElement("tr");
-    const actions = cell("");
+    const actions = document.createElement("td");
     actions.append(
       button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
       button(icon("fileText"), "print", item.id, "table-action table-action--icon", "Gerar PDF"),

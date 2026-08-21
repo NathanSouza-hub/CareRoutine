@@ -97,7 +97,7 @@ function renderDaily() {
 
   dayEvents.forEach((item) => {
     const row = document.createElement("tr");
-    const actions = cell("");
+    const actions = document.createElement("td");
     actions.append(
       button(icon("check"), "completed", item.id, `table-action table-action--icon table-action--success${item.status === "completed" ? " table-action--done" : ""}`, "Concluir"),
       button(icon("x"), "skipped", item.id, `table-action table-action--icon table-action--danger${item.status === "skipped" ? " table-action--skipped" : ""}`, "Não realizado"),

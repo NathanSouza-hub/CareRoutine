@@ -116,7 +116,7 @@ function vitalRow(record) {
 
 function noteRow(note) {
   const row = document.createElement("li");
-  row.className = `today-item${note.isHighlighted ? " highlighted-row" : ""}`;
+  row.className = "today-item highlighted-row";
 
   const time = document.createElement("span");
   time.className = "today-item__time";
@@ -126,7 +126,7 @@ function noteRow(note) {
   info.className = "today-item__info";
   const title = document.createElement("p");
   title.className = "today-item__title";
-  title.innerHTML = note.isHighlighted ? `${icon("pencil")}${note.authorName}` : note.authorName;
+  title.innerHTML = `${icon("pencil")}${note.authorName}`;
   const subtitle = document.createElement("p");
   subtitle.className = "today-item__subtitle";
   subtitle.textContent = `${note.shift} · ${note.noteText}`;

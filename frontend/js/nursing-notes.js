@@ -46,7 +46,7 @@ function fillCurrentDateTime() {
 
 function formData() {
   const data = Object.fromEntries(new FormData(form).entries());
-  return { ...data, patientId, isHighlighted: form.elements.isHighlighted.checked };
+  return { ...data, patientId, isHighlighted: true };
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
@@ -63,11 +63,10 @@ function renderNotes() {
   emptyNotes.hidden = notes.length > 0; notesWrapper.hidden = notes.length === 0;
   notes.forEach((item) => {
     const row = document.createElement("tr");
-    if (item.isHighlighted) row.className = "highlighted-row";
-    const actions = cell("");
+    row.className = "highlighted-row";
+    const actions = document.createElement("td");
     actions.append(
       button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
-      button(item.isHighlighted ? "Remover grifo" : "Grifar", "toggle-highlight", item.id),
       button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"),
     );
     const dateTime = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(`${item.noteDate}T${item.noteTime}:00`));
@@ -112,17 +111,9 @@ notesBody.addEventListener("click", async (event) => {
     form.elements.shift.value = item.shift;
     form.elements.authorName.value = item.authorName;
     form.elements.noteText.value = item.noteText;
-    form.elements.isHighlighted.checked = item.isHighlighted;
     cancelButton.hidden = false; submitButton.textContent = "Salvar alterações";
     message.textContent = "";
     showTab("nova");
-  }
-
-  if (target.dataset.action === "toggle-highlight") {
-    try {
-      await NursingNotesRepository.update(item.id, { ...item, isHighlighted: !item.isHighlighted, patientId });
-      await loadNotes();
-    } catch (error) { message.textContent = error.message; }
   }
 
   if (target.dataset.action === "delete" && window.confirm("Excluir esta anotação?")) {

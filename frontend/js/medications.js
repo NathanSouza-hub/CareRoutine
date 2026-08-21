@@ -91,7 +91,7 @@ function renderTreatments() {
   emptyTreatments.hidden = treatments.length > 0; treatmentsWrapper.hidden = treatments.length === 0;
   treatments.forEach((item) => {
     const row = document.createElement("tr");
-    const actions = cell(""); actions.append(button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"), button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"));
+    const actions = document.createElement("td"); actions.append(button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"), button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"));
     row.append(cell(item.name), cell(item.dosage), cell(item.schedules.map((s) => s.time).join(", ")), cell(`${item.startDate}${item.endDate ? ` a ${item.endDate}` : " em diante"}`), cell(item.isActive ? "Ativo" : "Inativo"), actions);
     treatmentsBody.append(row);
   });
@@ -104,7 +104,7 @@ async function loadDaily() {
   dailyBody.replaceChildren(); emptyDaily.hidden = doses.length > 0; dailyWrapper.hidden = doses.length === 0;
   const labels = { pending: "Pendente", taken: "Administrado", skipped: "Ignorado" };
   doses.forEach((dose) => {
-    const row = document.createElement("tr"); const actions = cell("");
+    const row = document.createElement("tr"); const actions = document.createElement("td");
     [
       { iconName: "check", action: "taken", title: "Administrado", baseClass: "table-action--success", doneClass: "table-action--done" },
       { iconName: "x", action: "skipped", title: "Ignorado", baseClass: "table-action--danger", doneClass: "table-action--skipped" },

@@ -44,7 +44,7 @@ function renderRoutines() {
   emptyRoutines.hidden = routines.length > 0; routinesWrapper.hidden = routines.length === 0;
   routines.forEach((item) => {
     const row = document.createElement("tr");
-    const actions = cell(""); actions.append(button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"), button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"));
+    const actions = document.createElement("td"); actions.append(button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"), button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"));
     const fixedCell = document.createElement("td");
     fixedCell.innerHTML = item.isFixed ? `${icon("pin")}Fixa` : "Variável";
     row.append(cell(item.title), cell(item.category), cell(item.time), fixedCell, cell(item.startDate), cell(item.isActive ? "Ativa" : "Inativa"), actions);
