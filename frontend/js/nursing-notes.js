@@ -50,10 +50,10 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action", title = label) {
-  const element = document.createElement("button"); element.type = "button"; element.textContent = label;
+function button(label, action, id, className = "table-action", title = "") {
+  const element = document.createElement("button"); element.type = "button"; element.innerHTML = label;
   element.className = className; element.dataset.action = action; element.dataset.id = id;
-  element.title = title; element.setAttribute("aria-label", title);
+  if (title) { element.title = title; element.setAttribute("aria-label", title); }
   return element;
 }
 
@@ -66,9 +66,9 @@ function renderNotes() {
     if (item.isHighlighted) row.className = "highlighted-row";
     const actions = cell("");
     actions.append(
-      button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"),
+      button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
       button(item.isHighlighted ? "Remover grifo" : "Grifar", "toggle-highlight", item.id),
-      button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"),
+      button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"),
     );
     const dateTime = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(`${item.noteDate}T${item.noteTime}:00`));
     const textCell = cell(item.noteText);

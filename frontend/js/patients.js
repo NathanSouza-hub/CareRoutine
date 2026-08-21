@@ -27,10 +27,10 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action", title = label) {
-  const element = document.createElement("button"); element.type = "button"; element.textContent = label;
+function button(label, action, id, className = "table-action", title = "") {
+  const element = document.createElement("button"); element.type = "button"; element.innerHTML = label;
   element.className = className; element.dataset.action = action; element.dataset.id = id;
-  element.title = title; element.setAttribute("aria-label", title);
+  if (title) { element.title = title; element.setAttribute("aria-label", title); }
   return element;
 }
 
@@ -47,9 +47,9 @@ function renderPatients() {
     const row = document.createElement("tr");
     const actions = cell("");
     actions.append(
-      button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"),
-      button("📄", "print", item.id, "table-action table-action--icon", "Gerar PDF"),
-      button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"),
+      button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
+      button(icon("fileText"), "print", item.id, "table-action table-action--icon", "Gerar PDF"),
+      button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"),
     );
     row.append(cell(item.fullName), cell(formatDate(item.birthDate)), cell(item.isActive ? "Ativo" : "Inativo"), actions);
     patientsBody.append(row);

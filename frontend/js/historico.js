@@ -42,19 +42,19 @@ function createActionsCell(recordId) {
 
   const editButton = document.createElement("button");
   editButton.type = "button";
-  editButton.className = "table-action";
+  editButton.className = "table-action table-action--icon";
   editButton.dataset.action = "edit";
   editButton.dataset.id = recordId;
-  editButton.textContent = "✏️";
+  editButton.innerHTML = icon("pencil");
   editButton.title = "Editar";
   editButton.setAttribute("aria-label", "Editar");
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
-  deleteButton.className = "table-action table-action--danger";
+  deleteButton.className = "table-action table-action--icon table-action--danger";
   deleteButton.dataset.action = "delete";
   deleteButton.dataset.id = recordId;
-  deleteButton.textContent = "🗑️";
+  deleteButton.innerHTML = icon("trash");
   deleteButton.title = "Excluir";
   deleteButton.setAttribute("aria-label", "Excluir");
 

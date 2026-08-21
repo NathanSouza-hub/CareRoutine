@@ -37,10 +37,10 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action", title = label) {
-  const element = document.createElement("button"); element.type = "button"; element.textContent = label;
+function button(label, action, id, className = "table-action", title = "") {
+  const element = document.createElement("button"); element.type = "button"; element.innerHTML = label;
   element.className = className; element.dataset.action = action; element.dataset.id = id;
-  element.title = title; element.setAttribute("aria-label", title);
+  if (title) { element.title = title; element.setAttribute("aria-label", title); }
   return element;
 }
 
@@ -99,10 +99,10 @@ function renderDaily() {
     const row = document.createElement("tr");
     const actions = cell("");
     actions.append(
-      button("Concluir", "completed", item.id),
-      button("Não realizado", "skipped", item.id),
-      button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"),
-      button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"),
+      button(icon("check"), "completed", item.id, `table-action table-action--icon table-action--success${item.status === "completed" ? " table-action--done" : ""}`, "Concluir"),
+      button(icon("x"), "skipped", item.id, `table-action table-action--icon table-action--danger${item.status === "skipped" ? " table-action--skipped" : ""}`, "Não realizado"),
+      button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
+      button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"),
     );
     row.append(cell(item.eventTime), cell(item.title), cell(item.category), cell(STATUS_LABELS[item.status]), actions);
     dailyBody.append(row);

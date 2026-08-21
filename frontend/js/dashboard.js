@@ -35,6 +35,13 @@ function showTab(name) {
   tabButtons.forEach((btn) => btn.classList.toggle("tab-button--active", btn.dataset.tab === name));
 }
 
+function taskIconMeta(item) {
+  if (item.kind === "medication") return { cls: "task-icon--medication", iconName: "pill" };
+  if (item.subtitle.includes("Alimenta")) return { cls: "task-icon--food", iconName: "coffee" };
+  if (item.subtitle.includes("Higiene")) return { cls: "task-icon--hygiene", iconName: "showerHead" };
+  return { cls: "", iconName: "clipboardList" };
+}
+
 function taskRow(item) {
   const row = document.createElement("li");
   row.className = `today-item${item.status !== "pending" ? " today-item--done" : ""}`;
@@ -43,11 +50,17 @@ function taskRow(item) {
   time.className = "today-item__time";
   time.textContent = item.time;
 
+  const { cls, iconName } = taskIconMeta(item);
+  const taskIcon = document.createElement("span");
+  taskIcon.className = `task-icon${cls ? ` ${cls}` : ""}`;
+  taskIcon.innerHTML = icon(iconName);
+
   const info = document.createElement("div");
   info.className = "today-item__info";
   const title = document.createElement("p");
   title.className = "today-item__title";
-  title.textContent = item.isFixed ? `📌 ${item.title}` : item.title;
+  if (item.isFixed) title.innerHTML = `${icon("pin")}${item.title}`;
+  else title.textContent = item.title;
   const subtitle = document.createElement("p");
   subtitle.className = "today-item__subtitle";
   subtitle.textContent = item.subtitle;
@@ -56,13 +69,13 @@ function taskRow(item) {
   const actions = document.createElement("div");
   actions.className = "today-item__actions";
   [
-    { label: "✅", title: item.doneLabel, action: item.doneStatus, doneClass: "table-action--done" },
-    { label: "❌", title: item.skipLabel, action: item.skipStatus, doneClass: "table-action--skipped" },
-  ].forEach(({ label, title: actionTitle, action, doneClass }) => {
+    { iconName: "check", title: item.doneLabel, action: item.doneStatus, baseClass: "table-action--success", doneClass: "table-action--done" },
+    { iconName: "x", title: item.skipLabel, action: item.skipStatus, baseClass: "table-action--danger", doneClass: "table-action--skipped" },
+  ].forEach(({ iconName: buttonIcon, title: actionTitle, action, baseClass, doneClass }) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `table-action table-action--icon${item.status === action ? ` ${doneClass}` : ""}`;
-    button.textContent = label;
+    button.className = `table-action table-action--icon ${baseClass}${item.status === action ? ` ${doneClass}` : ""}`;
+    button.innerHTML = icon(buttonIcon);
     button.title = actionTitle;
     button.setAttribute("aria-label", actionTitle);
     button.dataset.kind = item.kind;
@@ -72,7 +85,7 @@ function taskRow(item) {
     actions.append(button);
   });
 
-  row.append(time, info, actions);
+  row.append(time, taskIcon, info, actions);
   return row;
 }
 
@@ -113,7 +126,7 @@ function noteRow(note) {
   info.className = "today-item__info";
   const title = document.createElement("p");
   title.className = "today-item__title";
-  title.textContent = note.isHighlighted ? `🖊️ ${note.authorName}` : note.authorName;
+  title.innerHTML = note.isHighlighted ? `${icon("pencil")}${note.authorName}` : note.authorName;
   const subtitle = document.createElement("p");
   subtitle.className = "today-item__subtitle";
   subtitle.textContent = `${note.shift} · ${note.noteText}`;
@@ -175,6 +188,20 @@ async function loadTasks() {
   todayList.replaceChildren();
   todayEmpty.hidden = items.length > 0;
   items.forEach((item) => todayList.append(taskRow(item)));
+  updateSummary(items);
+}
+
+function updateSummary(items) {
+  const set = (id, value) => { const el = document.querySelector(id); if (el) el.textContent = String(value); };
+  const nowTime = new Date().toTimeString().slice(0, 5);
+  const isToday = selectedDate === today;
+  const resolved = items.filter((item) => item.status !== "pending").length;
+  const late = items.filter((item) => item.status === "pending" && isToday && item.time < nowTime).length;
+  const pending = items.filter((item) => item.status === "pending").length - late;
+  set("#summary-scheduled", items.length);
+  set("#summary-done", resolved);
+  set("#summary-pending", pending);
+  set("#summary-late", late);
 }
 
 async function loadVitals() {

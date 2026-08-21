@@ -11,10 +11,18 @@
     <div class="app-shell">
       <aside class="sidebar">
         <div class="sidebar__header">
-          <a class="brand" href="index.html">Lory's<span> Care</span></a>
+          <a class="brand" href="index.html"><span class="brand__icon"></span>Lory's<span> Care</span></a>
           <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
         </div>
+        <p class="sidebar__tagline">Cuidado que acolhe.</p>
         <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
+        <div class="sidebar-user-card" id="sidebar-user-card">
+          <div class="sidebar-user-card__avatar" id="sidebar-user-avatar"></div>
+          <div class="sidebar-user-card__info">
+            <p class="sidebar-user-card__name" id="sidebar-user-name"></p>
+            <p class="sidebar-user-card__role">Cuidador</p>
+          </div>
+        </div>
         <nav class="sidebar__nav">
           <a class="nav-link" href="index.html">Dashboard</a>
           <a class="nav-link" href="pacientes.html">Paciente</a>
@@ -25,7 +33,10 @@
           <a class="nav-link nav-link--active" href="agenda.html">Agenda</a>
           <a class="nav-link" href="historico.html">Histórico</a>
         </nav>
-        <p class="sidebar__user" id="sidebar-user"></p>
+        <div class="sidebar-bottom-card">
+          <span class="icon sidebar-bottom-card__icon"></span>
+          <p>Acolher é estar presente.<br />Cuidar é fazer a diferença todos os dias.</p>
+        </div>
       </aside>
 
       <div class="main-area">
@@ -76,10 +87,12 @@
             <div class="table-wrapper" id="daily-wrapper" hidden><table><thead><tr><th>Horário</th><th>Título</th><th>Categoria</th><th>Status</th><th>Ações</th></tr></thead><tbody id="daily-body"></tbody></table></div>
           </section>
         </main>
-        <footer><div class="container"><p>Lory's Care — apoio para o cuidado cotidiano.</p></div></footer>
+        <footer><div class="container"><p><span class="footer-heart"></span>Lory's Care — apoio para o cuidado cotidiano.</p></div></footer>
       </div>
     </div>
     <script src="js/auth-context.js"></script>
+    <script src="js/icons.js"></script>
+    <script src="js/ui-icons.js"></script>
     <script src="js/account-menu.js"></script>
     <script src="js/sidebar-toggle.js"></script>
     <script src="js/patient-context.js"></script>

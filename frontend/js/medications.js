@@ -78,10 +78,10 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action", title = label) {
-  const element = document.createElement("button"); element.type = "button"; element.textContent = label;
+function button(label, action, id, className = "table-action", title = "") {
+  const element = document.createElement("button"); element.type = "button"; element.innerHTML = label;
   element.className = className; element.dataset.action = action; element.dataset.id = id;
-  element.title = title; element.setAttribute("aria-label", title);
+  if (title) { element.title = title; element.setAttribute("aria-label", title); }
   return element;
 }
 
@@ -91,7 +91,7 @@ function renderTreatments() {
   emptyTreatments.hidden = treatments.length > 0; treatmentsWrapper.hidden = treatments.length === 0;
   treatments.forEach((item) => {
     const row = document.createElement("tr");
-    const actions = cell(""); actions.append(button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"), button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"));
+    const actions = cell(""); actions.append(button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"), button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"));
     row.append(cell(item.name), cell(item.dosage), cell(item.schedules.map((s) => s.time).join(", ")), cell(`${item.startDate}${item.endDate ? ` a ${item.endDate}` : " em diante"}`), cell(item.isActive ? "Ativo" : "Inativo"), actions);
     treatmentsBody.append(row);
   });
@@ -106,10 +106,10 @@ async function loadDaily() {
   doses.forEach((dose) => {
     const row = document.createElement("tr"); const actions = cell("");
     [
-      { emoji: "✅", action: "taken", title: "Administrado", doneClass: "table-action--done" },
-      { emoji: "❌", action: "skipped", title: "Ignorado", doneClass: "table-action--skipped" },
-    ].forEach(({ emoji, action, title, doneClass }) => {
-      const doseButton = button(emoji, action, dose.scheduleId, `table-action table-action--icon${dose.status === action ? ` ${doneClass}` : ""}`, title);
+      { iconName: "check", action: "taken", title: "Administrado", baseClass: "table-action--success", doneClass: "table-action--done" },
+      { iconName: "x", action: "skipped", title: "Ignorado", baseClass: "table-action--danger", doneClass: "table-action--skipped" },
+    ].forEach(({ iconName, action, title, baseClass, doneClass }) => {
+      const doseButton = button(icon(iconName), action, dose.scheduleId, `table-action table-action--icon ${baseClass}${dose.status === action ? ` ${doneClass}` : ""}`, title);
       actions.append(doseButton);
     });
     actions.dataset.medicationId = dose.medicationId;
