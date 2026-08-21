@@ -17,6 +17,17 @@ describe("routines service", () => {
     });
     assert.deepEqual(await service.create(validRoutine(), "9"), { id: "4" });
     assert.equal(received.isActive, true);
+    assert.equal(received.isFixed, false);
+  });
+
+  it("marca a atividade como fixa quando solicitado", async () => {
+    let received;
+    const service = createRoutinesService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return "4"; },
+    });
+    await service.create(validRoutine({ isFixed: true }), "9");
+    assert.equal(received.isFixed, true);
   });
 
   it("rejeita cadastro para paciente de outro usuário", async () => {

@@ -43,7 +43,7 @@ function taskRow(item) {
   info.className = "today-item__info";
   const title = document.createElement("p");
   title.className = "today-item__title";
-  title.textContent = item.title;
+  title.textContent = item.isFixed ? `📌 ${item.title}` : item.title;
   const subtitle = document.createElement("p");
   subtitle.className = "today-item__subtitle";
   subtitle.textContent = item.subtitle;
@@ -52,13 +52,15 @@ function taskRow(item) {
   const actions = document.createElement("div");
   actions.className = "today-item__actions";
   [
-    { label: item.doneLabel, action: item.doneStatus, doneClass: "table-action--done" },
-    { label: item.skipLabel, action: item.skipStatus, doneClass: "table-action--skipped" },
-  ].forEach(({ label, action, doneClass }) => {
+    { label: "✅", title: item.doneLabel, action: item.doneStatus, doneClass: "table-action--done" },
+    { label: "❌", title: item.skipLabel, action: item.skipStatus, doneClass: "table-action--skipped" },
+  ].forEach(({ label, title: actionTitle, action, doneClass }) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `table-action${item.status === action ? ` ${doneClass}` : ""}`;
+    button.className = `table-action table-action--icon${item.status === action ? ` ${doneClass}` : ""}`;
     button.textContent = label;
+    button.title = actionTitle;
+    button.setAttribute("aria-label", actionTitle);
     button.dataset.kind = item.kind;
     button.dataset.id = item.id;
     button.dataset.action = action;
@@ -108,8 +110,9 @@ async function loadTasks() {
       kind: "routine",
       id: activity.id,
       title: activity.title,
-      subtitle: `Rotina · ${activity.category}`,
+      subtitle: `Atividade · ${activity.category}`,
       status: activity.status,
+      isFixed: activity.isFixed,
       doneLabel: "Concluir",
       doneStatus: "completed",
       skipLabel: "Não realizada",

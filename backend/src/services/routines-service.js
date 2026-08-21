@@ -31,7 +31,11 @@ function validateRoutine(input, editing = false) {
   if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
   if (Object.keys(details).length) throw new RoutineValidationError(details);
 
-  return { title, category, time, notes: notes || null, startDate, patientId, isActive: editing ? input.isActive !== false : true };
+  return {
+    title, category, time, notes: notes || null, startDate, patientId,
+    isActive: editing ? input.isActive !== false : true,
+    isFixed: Boolean(input.isFixed),
+  };
 }
 
 function createRoutinesService(repository) {

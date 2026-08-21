@@ -27,7 +27,7 @@ function localDate() {
 
 function formData() {
   const data = Object.fromEntries(new FormData(form).entries());
-  return { ...data, patientId, isActive: form.elements.isActive.checked };
+  return { ...data, patientId, isActive: form.elements.isActive.checked, isFixed: form.elements.isFixed.checked };
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
@@ -38,12 +38,12 @@ function button(label, action, id, className = "table-action") {
 
 function renderRoutines() {
   routinesBody.replaceChildren();
-  routinesCount.textContent = `${routines.length} ${routines.length === 1 ? "rotina" : "rotinas"}`;
+  routinesCount.textContent = `${routines.length} ${routines.length === 1 ? "atividade" : "atividades"}`;
   emptyRoutines.hidden = routines.length > 0; routinesWrapper.hidden = routines.length === 0;
   routines.forEach((item) => {
     const row = document.createElement("tr");
     const actions = cell(""); actions.append(button("Editar", "edit", item.id), button("Excluir", "delete", item.id, "table-action table-action--danger"));
-    row.append(cell(item.title), cell(item.category), cell(item.time), cell(item.startDate), cell(item.isActive ? "Ativa" : "Inativa"), actions);
+    row.append(cell(item.title), cell(item.category), cell(item.time), cell(item.isFixed ? "📌 Fixa" : "Variável"), cell(item.startDate), cell(item.isActive ? "Ativa" : "Inativa"), actions);
     routinesBody.append(row);
   });
 }
@@ -52,6 +52,7 @@ async function loadRoutines() { routines = await RoutinesRepository.getAll(patie
 
 function finishEditing(text = "") {
   editingId = null; form.reset(); form.elements.startDate.value = localDate(); form.elements.isActive.checked = true;
+  form.elements.isFixed.checked = false;
   activeField.hidden = true; cancelButton.hidden = true; submitButton.textContent = "Cadastrar atividade"; message.textContent = text;
 }
 
@@ -73,10 +74,11 @@ routinesBody.addEventListener("click", async (event) => {
     editingId = String(item.id); form.elements.title.value = item.title; form.elements.category.value = item.category;
     form.elements.time.value = item.time; form.elements.startDate.value = item.startDate;
     form.elements.notes.value = item.notes || ""; form.elements.isActive.checked = item.isActive;
+    form.elements.isFixed.checked = Boolean(item.isFixed);
     activeField.hidden = false; cancelButton.hidden = false; submitButton.textContent = "Salvar alterações";
     showTab("nova");
   }
-  if (target.dataset.action === "delete" && window.confirm("Excluir esta rotina e seu histórico?")) {
+  if (target.dataset.action === "delete" && window.confirm("Excluir esta atividade e seu histórico?")) {
     try { await RoutinesRepository.remove(target.dataset.id); await loadRoutines(); }
     catch (error) { message.textContent = error.message; }
   }
