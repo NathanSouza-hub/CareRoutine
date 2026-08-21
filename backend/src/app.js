@@ -55,7 +55,7 @@ const vitalsController = createVitalsController(vitalsService, changeBus);
 app.use("/api/vitals", requireAuth, attachProfile, createVitalsRouter(vitalsController));
 
 const medicationsService = createMedicationsService(medicationsRepository);
-const medicationsController = createMedicationsController(medicationsService);
+const medicationsController = createMedicationsController(medicationsService, changeBus);
 app.use("/api/medications", requireAuth, attachProfile, createMedicationsRouter(medicationsController));
 
 const routinesService = createRoutinesService(routinesRepository);

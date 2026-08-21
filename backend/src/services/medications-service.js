@@ -86,7 +86,7 @@ function createMedicationsService(repository) {
     return repository.getDaily(date, patientId, userId);
   }
 
-  async function setAdministration(medicationId, scheduleId, input, userId) {
+  async function setAdministration(medicationId, scheduleId, input, userId, profileId) {
     validateId(medicationId, "medicationId");
     validateId(scheduleId, "scheduleId");
     const details = {};
@@ -106,6 +106,7 @@ function createMedicationsService(repository) {
       status,
       administeredAt: status === "taken" ? new Date() : null,
       notes: notes || null,
+      authorProfileId: profileId ?? null,
     });
   }
 
