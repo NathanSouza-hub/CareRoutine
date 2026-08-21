@@ -29,6 +29,10 @@ const createAuthController = require("./controllers/auth-controller");
 const usersRepository = require("./repositories/users-repository");
 const createAuthRouter = require("./routes/auth-routes");
 const createAuthService = require("./services/auth-service");
+const createCaregiverProfilesController = require("./controllers/caregiver-profiles-controller");
+const caregiverProfilesRepository = require("./repositories/caregiver-profiles-repository");
+const createCaregiverProfilesRouter = require("./routes/caregiver-profiles-routes");
+const createCaregiverProfilesService = require("./services/caregiver-profiles-service");
 const createRequireAuth = require("./middleware/require-auth");
 const createChangeBus = require("./realtime/change-bus");
 
@@ -67,6 +71,10 @@ app.use("/api/events", requireAuth, createEventsRouter(eventsController));
 const nursingNotesService = createNursingNotesService(nursingNotesRepository);
 const nursingNotesController = createNursingNotesController(nursingNotesService);
 app.use("/api/nursing-notes", requireAuth, createNursingNotesRouter(nursingNotesController));
+
+const caregiverProfilesService = createCaregiverProfilesService(caregiverProfilesRepository);
+const caregiverProfilesController = createCaregiverProfilesController(caregiverProfilesService, changeBus);
+app.use("/api/caregiver-profiles", requireAuth, createCaregiverProfilesRouter(caregiverProfilesController));
 
 app.get("/api/stream", (request, response) => {
   let userId;
