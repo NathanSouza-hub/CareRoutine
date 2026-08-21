@@ -21,6 +21,26 @@ function validInput(overrides = {}) {
 }
 
 describe("vitals service", () => {
+  it("inclui o profileId de quem fez a medicao", async () => {
+    let received;
+    const service = createVitalsService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return { id: "1", ...data }; },
+    });
+    await service.create(validInput(), "9", "3");
+    assert.equal(received.authorProfileId, "3");
+  });
+
+  it("aceita profileId nulo", async () => {
+    let received;
+    const service = createVitalsService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return { id: "1", ...data }; },
+    });
+    await service.create(validInput(), "9", null);
+    assert.equal(received.authorProfileId, null);
+  });
+
   it("valida, transforma e envia os dados ao repositório", async () => {
     let receivedData;
     const repository = {
@@ -45,6 +65,7 @@ describe("vitals service", () => {
       bloodGlucose: 95,
       notes: "Após o repouso",
       patientId: "1",
+      authorProfileId: null,
     });
     assert.equal(result.id, "1");
   });

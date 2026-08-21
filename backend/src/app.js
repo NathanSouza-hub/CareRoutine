@@ -50,7 +50,7 @@ const attachProfile = createAttachProfile(caregiverProfilesRepository);
 app.use("/api/auth", createAuthRouter(authController, requireAuth));
 
 const vitalsService = createVitalsService(vitalsRepository);
-const vitalsController = createVitalsController(vitalsService);
+const vitalsController = createVitalsController(vitalsService, changeBus);
 
 app.use("/api/vitals", requireAuth, attachProfile, createVitalsRouter(vitalsController));
 

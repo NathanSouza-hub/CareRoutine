@@ -15,10 +15,11 @@ function handleKnownError(error, response) {
   return false;
 }
 
-function createVitalsController(vitalsService) {
+function createVitalsController(vitalsService, changeBus) {
   async function create(request, response, next) {
     try {
-      const vitalSigns = await vitalsService.create(request.body, request.userId);
+      const vitalSigns = await vitalsService.create(request.body, request.userId, request.profileId);
+      changeBus.publish(request.userId, { resource: "vitals", action: "created" });
       response.status(201).json({ data: vitalSigns });
     } catch (error) {
       if (!handleKnownError(error, response)) next(error);
@@ -37,6 +38,7 @@ function createVitalsController(vitalsService) {
   async function update(request, response, next) {
     try {
       const vitalSigns = await vitalsService.update(request.params.id, request.body, request.userId);
+      changeBus.publish(request.userId, { resource: "vitals", action: "updated" });
       response.status(200).json({ data: vitalSigns });
     } catch (error) {
       if (!handleKnownError(error, response)) next(error);
@@ -46,6 +48,7 @@ function createVitalsController(vitalsService) {
   async function remove(request, response, next) {
     try {
       await vitalsService.remove(request.params.id, request.userId);
+      changeBus.publish(request.userId, { resource: "vitals", action: "removed" });
       response.status(204).send();
     } catch (error) {
       if (!handleKnownError(error, response)) next(error);
