@@ -56,4 +56,24 @@
       avatarEl.textContent = initials(userName);
     }
   }
+
+  const roleEl = document.querySelector(".sidebar-user-card__role");
+  if (roleEl && window.CaregiverContext) {
+    const profileName = CaregiverContext.getCurrentName();
+    roleEl.replaceChildren();
+    const label = document.createElement("span");
+    label.textContent = profileName || "Cuidador";
+    roleEl.append(label);
+    if (profileName) {
+      const switchLink = document.createElement("button");
+      switchLink.type = "button";
+      switchLink.className = "sidebar-user-card__switch";
+      switchLink.textContent = "Trocar";
+      switchLink.addEventListener("click", () => {
+        CaregiverContext.clearCurrent();
+        location.href = "perfis.html";
+      });
+      roleEl.append(document.createTextNode(" · "), switchLink);
+    }
+  }
 })();
