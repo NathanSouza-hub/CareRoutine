@@ -1670,3 +1670,12 @@ tbody tr:last-child td {
   font-weight: 500;
   color: var(--text-secondary);
 }
+
+.form-hint {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}

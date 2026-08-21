@@ -2,6 +2,10 @@ const form = document.querySelector("#note-form");
 const message = document.querySelector("#form-message");
 const submitButton = document.querySelector("#submit-button");
 const cancelButton = document.querySelector("#cancel-button");
+const dateField = document.querySelector("#note-date-field");
+const shiftField = document.querySelector("#note-shift-field");
+const plantaoHint = document.querySelector("#plantao-hint");
+const noteTextField = document.querySelector("#note-text");
 const notesBody = document.querySelector("#notes-body");
 const notesWrapper = document.querySelector("#notes-wrapper");
 const emptyNotes = document.querySelector("#empty-notes");
@@ -12,6 +16,7 @@ const tabButtons = document.querySelectorAll("[data-tab]");
 const tabNova = document.querySelector("#tab-nova");
 const tabCadastradas = document.querySelector("#tab-cadastradas");
 let notes = [];
+let todayNotes = [];
 let editingId = null;
 let patientId = null;
 
@@ -42,6 +47,34 @@ function fillCurrentDateTime() {
   form.elements.noteDate.value = localDate();
   form.elements.noteTime.value = localTime();
   form.elements.shift.value = shiftFromHour(new Date().getHours());
+}
+
+function findTodayShiftForCurrentCaregiver() {
+  const profileId = CaregiverContext.getCurrentId();
+  if (!profileId) return null;
+  const mine = todayNotes
+    .filter((item) => String(item.authorProfileId) === String(profileId))
+    .sort((first, second) => first.noteTime.localeCompare(second.noteTime));
+  return mine.length ? mine[0].shift : null;
+}
+
+function updateFormMode() {
+  if (editingId) return;
+  const todayShift = findTodayShiftForCurrentCaregiver();
+  if (todayShift) {
+    dateField.hidden = true;
+    shiftField.hidden = true;
+    form.elements.noteDate.value = localDate();
+    form.elements.shift.value = todayShift;
+    plantaoHint.hidden = false;
+    plantaoHint.textContent = `Você já tem um plantão hoje (${todayShift}) — só é preciso registrar o horário e o que aconteceu.`;
+    noteTextField.placeholder = "Descreva rapidamente o que aconteceu agora";
+  } else {
+    dateField.hidden = false;
+    shiftField.hidden = false;
+    plantaoHint.hidden = true;
+    noteTextField.placeholder = "Descreva a evolução do plantão";
+  }
 }
 
 function formData() {
@@ -79,13 +112,20 @@ function renderNotes() {
 
 async function loadNotes() {
   const filters = Object.fromEntries(new FormData(filtersForm).entries());
-  notes = await NursingNotesRepository.getAll(patientId, filters);
+  const [filtered, today] = await Promise.all([
+    NursingNotesRepository.getAll(patientId, filters),
+    NursingNotesRepository.getAll(patientId, { date: localDate() }),
+  ]);
+  notes = filtered;
+  todayNotes = today;
   renderNotes();
+  updateFormMode();
 }
 
 function finishEditing(text = "") {
   editingId = null; form.reset(); fillCurrentDateTime();
   cancelButton.hidden = true; submitButton.textContent = "Registrar anotação"; message.textContent = text;
+  updateFormMode();
 }
 
 form.addEventListener("submit", async (event) => {
@@ -106,6 +146,8 @@ notesBody.addEventListener("click", async (event) => {
 
   if (target.dataset.action === "edit") {
     editingId = String(item.id);
+    dateField.hidden = false; shiftField.hidden = false; plantaoHint.hidden = true;
+    noteTextField.placeholder = "Descreva a evolução do plantão";
     form.elements.noteDate.value = item.noteDate;
     form.elements.noteTime.value = item.noteTime;
     form.elements.shift.value = item.shift;
