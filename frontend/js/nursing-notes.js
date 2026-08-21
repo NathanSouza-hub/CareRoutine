@@ -72,7 +72,7 @@ function renderNotes() {
     const dateTime = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(`${item.noteDate}T${item.noteTime}:00`));
     const textCell = cell(item.noteText);
     textCell.className = "table-cell--wrap";
-    row.append(cell(dateTime), cell(item.shift), cell(item.authorName), textCell, actions);
+    row.append(cell(dateTime), cell(item.shift), cell(item.authorProfileName || item.authorName), textCell, actions);
     notesBody.append(row);
   });
 }
@@ -109,7 +109,6 @@ notesBody.addEventListener("click", async (event) => {
     form.elements.noteDate.value = item.noteDate;
     form.elements.noteTime.value = item.noteTime;
     form.elements.shift.value = item.shift;
-    form.elements.authorName.value = item.authorName;
     form.elements.noteText.value = item.noteText;
     cancelButton.hidden = false; submitButton.textContent = "Salvar alterações";
     message.textContent = "";
