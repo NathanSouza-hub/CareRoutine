@@ -573,7 +573,7 @@ h1 {
 }
 
 .today-panel {
-  margin-bottom: 24px;
+  margin-bottom: 56px;
   padding: 30px;
   background: var(--surface);
   border: 1px solid #edf2f4;
@@ -1094,6 +1094,49 @@ footer .footer-heart svg {
   padding-left: 12px;
   padding-right: 12px;
   border-radius: var(--radius-sm);
+  align-items: flex-start;
+}
+
+.today-item__note-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.today-item__note-icon .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--warning);
+}
+
+.today-item__note-text {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.today-item__note-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.today-item__note-author .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--text-secondary);
 }
 
 table {
@@ -1347,11 +1390,21 @@ tbody tr:last-child td {
   margin: 0;
 }
 
-.tip-card p {
-  margin: 0;
+.tip-card__verse {
+  margin: 0 0 8px;
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 13px;
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
+}
+
+.tip-card__reference {
+  margin: 0;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .quick-actions__grid {

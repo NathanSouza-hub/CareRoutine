@@ -28,24 +28,11 @@ function localDate() {
 const today = localDate();
 let selectedDate = today;
 
-const DAILY_TIPS = [
-  "Pequenas atitudes diárias constroem grandes cuidados.",
-  "Uma escuta atenta vale tanto quanto qualquer remédio.",
-  "Anote tudo: o detalhe que parece pequeno hoje pode ser importante amanhã.",
-  "Respeitar o tempo do paciente também é um cuidado.",
-  "Manter a rotina em dia evita sustos e traz segurança.",
-  "Um sorriso no início do cuidado já muda o dia de alguém.",
-  "Cuidar de quem cuida também é essencial: descanse quando puder.",
-  "Hidratação e boa alimentação fazem parte do tratamento.",
-  "Comunicação clara com a equipe evita falhas no cuidado.",
-  "Cada gesto de paciência é também um gesto de cuidado.",
-];
-
-function dailyTip() {
+function verseOfTheDay() {
   const now = new Date();
   const startOfYear = new Date(now.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((now - startOfYear) / 86400000);
-  return DAILY_TIPS[dayOfYear % DAILY_TIPS.length];
+  return PSALMS[dayOfYear % PSALMS.length];
 }
 
 function showTab(name) {
@@ -148,17 +135,22 @@ function noteRow(note) {
   time.className = "today-item__time";
   time.textContent = note.noteTime;
 
+  const noteIcon = document.createElement("span");
+  noteIcon.className = "today-item__note-icon";
+  noteIcon.innerHTML = icon("pencil");
+
   const info = document.createElement("div");
   info.className = "today-item__info";
-  const title = document.createElement("p");
-  title.className = "today-item__title";
-  title.innerHTML = `${icon("pencil")}${note.authorName}`;
-  const subtitle = document.createElement("p");
-  subtitle.className = "today-item__subtitle";
-  subtitle.textContent = `${note.shift} · ${note.noteText}`;
-  info.append(title, subtitle);
+  const text = document.createElement("p");
+  text.className = "today-item__note-text";
+  text.textContent = note.noteText;
+  info.append(text);
 
-  row.append(time, info);
+  const author = document.createElement("span");
+  author.className = "today-item__note-author";
+  author.innerHTML = `${icon("user")}<span>${note.authorProfileName || "Sem responsável"}</span>`;
+
+  row.append(time, noteIcon, info, author);
   return row;
 }
 
@@ -315,7 +307,9 @@ showTab("agenda");
 
 dashboardTitle.textContent = `Olá, ${AuthContext.getUserName()}!`;
 document.querySelector("#current-date").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "full" }).format(new Date());
-document.querySelector("#daily-tip").textContent = dailyTip();
+const verse = verseOfTheDay();
+document.querySelector("#daily-verse-text").textContent = verse.text ? `"${verse.text}"` : "Texto deste versículo em breve.";
+document.querySelector("#daily-verse-reference").textContent = verse.reference;
 tasksDate.value = today;
 
 PatientContext.ready().then((id) => {
