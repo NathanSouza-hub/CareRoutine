@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Escolha quem está usando o Lory's Care." />
+    <title>Quem está cuidando? | Lory's Care</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="profile-picker">
+      <div>
+        <a class="brand" href="index.html"><span class="brand__icon"></span>Lory's<span> Care</span></a>
+        <h1>Quem está cuidando agora?</h1>
+      </div>
+      <div class="profile-grid" id="profile-grid"></div>
+      <p class="empty-history" id="empty-profiles" hidden>Nenhum cuidador cadastrado ainda. Peça para o responsável da conta cadastrar em "Meu perfil".</p>
+      <p class="form-message" id="message" aria-live="polite"></p>
+    </div>
+
+    <script src="js/icons.js"></script>
+    <script src="js/auth-context.js"></script>
+    <script src="js/caregiver-profiles-repository.js"></script>
+    <script src="js/caregiver-context.js"></script>
+    <script src="js/perfis.js"></script>
+  </body>
+</html>
