@@ -34,6 +34,7 @@ const caregiverProfilesRepository = require("./repositories/caregiver-profiles-r
 const createCaregiverProfilesRouter = require("./routes/caregiver-profiles-routes");
 const createCaregiverProfilesService = require("./services/caregiver-profiles-service");
 const createRequireAuth = require("./middleware/require-auth");
+const createAttachProfile = require("./middleware/attach-profile");
 const createChangeBus = require("./realtime/change-bus");
 
 const app = express();
@@ -45,20 +46,21 @@ app.use(express.json({ limit: "2mb" }));
 const authService = createAuthService(usersRepository);
 const authController = createAuthController(authService);
 const requireAuth = createRequireAuth(authService);
+const attachProfile = createAttachProfile(caregiverProfilesRepository);
 app.use("/api/auth", createAuthRouter(authController, requireAuth));
 
 const vitalsService = createVitalsService(vitalsRepository);
 const vitalsController = createVitalsController(vitalsService);
 
-app.use("/api/vitals", requireAuth, createVitalsRouter(vitalsController));
+app.use("/api/vitals", requireAuth, attachProfile, createVitalsRouter(vitalsController));
 
 const medicationsService = createMedicationsService(medicationsRepository);
 const medicationsController = createMedicationsController(medicationsService);
-app.use("/api/medications", requireAuth, createMedicationsRouter(medicationsController));
+app.use("/api/medications", requireAuth, attachProfile, createMedicationsRouter(medicationsController));
 
 const routinesService = createRoutinesService(routinesRepository);
 const routinesController = createRoutinesController(routinesService);
-app.use("/api/routines", requireAuth, createRoutinesRouter(routinesController));
+app.use("/api/routines", requireAuth, attachProfile, createRoutinesRouter(routinesController));
 
 const patientsService = createPatientsService(patientsRepository);
 const patientsController = createPatientsController(patientsService);
@@ -66,11 +68,11 @@ app.use("/api/patients", requireAuth, createPatientsRouter(patientsController));
 
 const eventsService = createEventsService(eventsRepository);
 const eventsController = createEventsController(eventsService);
-app.use("/api/events", requireAuth, createEventsRouter(eventsController));
+app.use("/api/events", requireAuth, attachProfile, createEventsRouter(eventsController));
 
 const nursingNotesService = createNursingNotesService(nursingNotesRepository);
 const nursingNotesController = createNursingNotesController(nursingNotesService);
-app.use("/api/nursing-notes", requireAuth, createNursingNotesRouter(nursingNotesController));
+app.use("/api/nursing-notes", requireAuth, attachProfile, createNursingNotesRouter(nursingNotesController));
 
 const caregiverProfilesService = createCaregiverProfilesService(caregiverProfilesRepository);
 const caregiverProfilesController = createCaregiverProfilesController(caregiverProfilesService, changeBus);
