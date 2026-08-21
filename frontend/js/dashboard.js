@@ -28,6 +28,26 @@ function localDate() {
 const today = localDate();
 let selectedDate = today;
 
+const DAILY_TIPS = [
+  "Pequenas atitudes diárias constroem grandes cuidados.",
+  "Uma escuta atenta vale tanto quanto qualquer remédio.",
+  "Anote tudo: o detalhe que parece pequeno hoje pode ser importante amanhã.",
+  "Respeitar o tempo do paciente também é um cuidado.",
+  "Manter a rotina em dia evita sustos e traz segurança.",
+  "Um sorriso no início do cuidado já muda o dia de alguém.",
+  "Cuidar de quem cuida também é essencial: descanse quando puder.",
+  "Hidratação e boa alimentação fazem parte do tratamento.",
+  "Comunicação clara com a equipe evita falhas no cuidado.",
+  "Cada gesto de paciência é também um gesto de cuidado.",
+];
+
+function dailyTip() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - startOfYear) / 86400000);
+  return DAILY_TIPS[dayOfYear % DAILY_TIPS.length];
+}
+
 function showTab(name) {
   tabAgenda.hidden = name !== "agenda";
   tabVitais.hidden = name !== "vitais";
@@ -195,11 +215,11 @@ function updateSummary(items) {
   const set = (id, value) => { const el = document.querySelector(id); if (el) el.textContent = String(value); };
   const nowTime = new Date().toTimeString().slice(0, 5);
   const isToday = selectedDate === today;
-  const resolved = items.filter((item) => item.status !== "pending").length;
+  const done = items.filter((item) => item.status === item.doneStatus).length;
   const late = items.filter((item) => item.status === "pending" && isToday && item.time < nowTime).length;
   const pending = items.filter((item) => item.status === "pending").length - late;
   set("#summary-scheduled", items.length);
-  set("#summary-done", resolved);
+  set("#summary-done", done);
   set("#summary-pending", pending);
   set("#summary-late", late);
 }
@@ -286,6 +306,7 @@ showTab("agenda");
 
 dashboardTitle.textContent = `Olá, ${AuthContext.getUserName()}!`;
 document.querySelector("#current-date").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "full" }).format(new Date());
+document.querySelector("#daily-tip").textContent = dailyTip();
 tasksDate.value = today;
 
 PatientContext.ready().then((id) => {

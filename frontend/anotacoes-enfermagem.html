@@ -69,7 +69,7 @@
                     <option value="Madrugada">Madrugada</option>
                   </select>
                 </div>
-                <div class="form-field"><label for="author-name">Funcionário</label><input id="author-name" name="authorName" maxlength="120" placeholder="Nome de quem fez a evolução" required /></div>
+                <div class="form-field"><label for="author-name">Cuidador</label><input id="author-name" name="authorName" maxlength="120" placeholder="Nome de quem fez a evolução" required /></div>
                 <div class="form-field form-field--full"><label for="note-text">Evolução</label><textarea id="note-text" name="noteText" maxlength="2000" placeholder="Descreva a evolução do plantão" required></textarea></div>
               </div>
               <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Registrar anotação</button><button class="secondary-button" id="cancel-button" type="button" hidden>Cancelar edição</button><p class="form-message" id="form-message" aria-live="polite"></p></div>
@@ -97,7 +97,7 @@
             <p class="empty-history" id="empty-notes">Nenhuma anotação registrada.</p>
             <div class="table-wrapper" id="notes-wrapper" hidden>
               <table>
-                <thead><tr><th>Data e hora</th><th>Plantão</th><th>Funcionário</th><th>Evolução</th><th>Ações</th></tr></thead>
+                <thead><tr><th>Data e hora</th><th>Plantão</th><th>Cuidador</th><th>Evolução</th><th>Ações</th></tr></thead>
                 <tbody id="notes-body"></tbody>
               </table>
             </div>

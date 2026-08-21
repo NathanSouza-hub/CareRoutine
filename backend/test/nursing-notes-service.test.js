@@ -51,7 +51,7 @@ describe("nursing notes service", () => {
     await assert.rejects(service.create(validNote({ noteText: "" })), NursingNoteValidationError);
   });
 
-  it("rejeita funcionário não informado", async () => {
+  it("rejeita cuidador não informado", async () => {
     const service = createNursingNotesService({ create: async () => assert.fail() });
     await assert.rejects(service.create(validNote({ authorName: "" })), NursingNoteValidationError);
   });

@@ -28,7 +28,7 @@ function validateNote(input, editing = false) {
   if (!isDate(noteDate)) details.noteDate = "Informe uma data válida";
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(noteTime)) details.noteTime = "Informe um horário válido";
   if (!VALID_SHIFTS.has(shift)) details.shift = "Informe um turno válido";
-  if (!authorName || authorName.length > 120) details.authorName = "Informe o funcionário com até 120 caracteres";
+  if (!authorName || authorName.length > 120) details.authorName = "Informe o cuidador com até 120 caracteres";
   if (!noteText || noteText.length > 2000) details.noteText = "Informe o texto da evolução com até 2000 caracteres";
   if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
   if (Object.keys(details).length) throw new NursingNoteValidationError(details);
