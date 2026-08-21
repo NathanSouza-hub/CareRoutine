@@ -1079,6 +1079,7 @@ footer .footer-heart svg {
   white-space: normal;
   min-width: 220px;
   max-width: 420px;
+  overflow-wrap: anywhere;
 }
 
 .highlighted-row {
@@ -1122,6 +1123,7 @@ td:nth-child(8) {
   min-width: 220px;
   max-width: 320px;
   white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 tbody tr:last-child td {

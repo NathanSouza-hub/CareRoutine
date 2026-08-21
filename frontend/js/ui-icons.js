@@ -7,7 +7,6 @@
     "atividades.html": "clipboardList",
     "anotacoes-enfermagem.html": "notebookPen",
     "agenda.html": "calendarDays",
-    "historico.html": "history",
   };
 
   function fillIcon(selector, name) {

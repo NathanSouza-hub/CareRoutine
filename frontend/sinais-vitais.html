@@ -31,7 +31,6 @@
           <a class="nav-link" href="atividades.html">Atividades</a>
           <a class="nav-link" href="anotacoes-enfermagem.html">Anotações enfermagem</a>
           <a class="nav-link" href="agenda.html">Agenda</a>
-          <a class="nav-link" href="historico.html">Histórico</a>
         </nav>
         <div class="sidebar-bottom-card">
           <span class="icon sidebar-bottom-card__icon"></span>
@@ -50,10 +49,15 @@
         <main class="main-content">
           <header class="page-header container">
             <h1>Sinais vitais</h1>
-            <p>Registre rapidamente as medições do dia. O histórico completo fica em "Histórico".</p>
+            <p>Registre rapidamente as medições do dia e consulte o histórico completo.</p>
           </header>
 
-          <section class="form-panel container" aria-labelledby="form-title">
+          <div class="tabs container" role="tablist">
+            <button class="tab-button" id="tab-button-novo" type="button" data-tab="novo">Novo registro</button>
+            <button class="tab-button" id="tab-button-historico" type="button" data-tab="historico">Histórico</button>
+          </div>
+
+          <section class="form-panel container" id="tab-novo" aria-labelledby="form-title">
             <h2 id="form-title">Novo registro</h2>
 
             <form id="vitals-form">
@@ -159,6 +163,89 @@
               </div>
             </form>
           </section>
+
+          <div id="tab-historico" hidden>
+            <section class="form-panel container" id="edit-panel" aria-labelledby="edit-form-title" hidden>
+              <h2 id="edit-form-title">Editando registro</h2>
+              <form id="edit-form">
+                <div class="form-grid">
+                  <div class="form-field"><label for="edit-date">Data</label><input id="edit-date" name="date" type="date" required /></div>
+                  <div class="form-field"><label for="edit-time">Horário</label><input id="edit-time" name="time" type="time" required /></div>
+                  <div class="form-field">
+                    <label for="edit-shift">Período/turno</label>
+                    <select id="edit-shift" name="shift" required>
+                      <option value="">Selecione</option>
+                      <option value="Manhã">Manhã</option>
+                      <option value="Tarde">Tarde</option>
+                      <option value="Noite">Noite</option>
+                      <option value="Madrugada">Madrugada</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="edit-blood-pressure">Pressão arterial</label>
+                    <input id="edit-blood-pressure" name="bloodPressure" type="text" placeholder="Ex.: 120/80" pattern="[0-9]{2,3}/[0-9]{2,3}" />
+                  </div>
+                  <div class="form-field"><label for="edit-temperature">Temperatura (°C)</label><input id="edit-temperature" name="temperature" type="number" min="30" max="45" step="0.1" /></div>
+                  <div class="form-field"><label for="edit-oxygen-saturation">Saturação (%)</label><input id="edit-oxygen-saturation" name="oxygenSaturation" type="number" min="1" max="100" /></div>
+                  <div class="form-field"><label for="edit-heart-rate">Frequência cardíaca (bpm)</label><input id="edit-heart-rate" name="heartRate" type="number" min="1" max="300" /></div>
+                  <div class="form-field"><label for="edit-blood-glucose">Glicemia (mg/dL)</label><input id="edit-blood-glucose" name="bloodGlucose" type="number" min="1" max="1000" /></div>
+                  <div class="form-field form-field--full"><label for="edit-notes">Observações</label><textarea id="edit-notes" name="notes" maxlength="500"></textarea></div>
+                </div>
+                <div class="form-actions">
+                  <button class="primary-button" id="edit-submit-button" type="submit">Salvar alterações</button>
+                  <button class="secondary-button" id="cancel-edit-button" type="button">Cancelar edição</button>
+                  <p class="form-message" id="edit-form-message" aria-live="polite"></p>
+                </div>
+              </form>
+            </section>
+
+            <section class="history-panel container" aria-labelledby="history-title">
+              <div class="history-panel__header">
+                <div><p class="eyebrow">Acompanhamento</p><h2 id="history-title">Registros de sinais vitais</h2></div>
+                <div class="history-panel__header-actions">
+                  <p id="records-count" class="records-count"></p>
+                  <button class="secondary-button" id="print-button" type="button" title="Gerar PDF" aria-label="Gerar PDF"><span class="icon" data-icon="fileText"></span></button>
+                </div>
+              </div>
+
+              <form class="history-filters" id="history-filters">
+                <div class="form-field"><label for="filter-start-date">Data inicial</label><input id="filter-start-date" name="startDate" type="date" /></div>
+                <div class="form-field"><label for="filter-end-date">Data final</label><input id="filter-end-date" name="endDate" type="date" /></div>
+                <div class="form-field">
+                  <label for="filter-shift">Turno</label>
+                  <select id="filter-shift" name="shift">
+                    <option value="">Todos</option>
+                    <option value="Manhã">Manhã</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noite">Noite</option>
+                    <option value="Madrugada">Madrugada</option>
+                  </select>
+                </div>
+                <button class="secondary-button" id="clear-filters-button" type="button">Limpar filtros</button>
+              </form>
+
+              <p id="empty-history" class="empty-history">Nenhum sinal vital foi registrado.</p>
+
+              <div id="history-table-wrapper" class="table-wrapper" hidden>
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Data e hora</th>
+                      <th scope="col">Turno</th>
+                      <th scope="col">PA</th>
+                      <th scope="col">FC</th>
+                      <th scope="col">Saturação</th>
+                      <th scope="col">Temperatura</th>
+                      <th scope="col">Glicemia</th>
+                      <th scope="col">Observações</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vitals-history"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
         </main>
 
         <footer>

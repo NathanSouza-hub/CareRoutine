@@ -31,7 +31,6 @@
           <a class="nav-link" href="atividades.html">Atividades</a>
           <a class="nav-link" href="anotacoes-enfermagem.html">Anotações enfermagem</a>
           <a class="nav-link" href="agenda.html">Agenda</a>
-          <a class="nav-link" href="historico.html">Histórico</a>
         </nav>
         <div class="sidebar-bottom-card">
           <span class="icon sidebar-bottom-card__icon"></span>
@@ -103,6 +102,7 @@
               <label for="instructions">Instruções</label>
               <textarea id="instructions" name="instructions" maxlength="500" placeholder="Ex.: tomar após a refeição"></textarea>
             </div>
+            <div class="form-field"><label><input id="is-fixed" name="isFixed" type="checkbox" /> Medicamento fixo (uso contínuo)</label></div>
             <div class="form-field" id="active-field" hidden>
               <label><input id="is-active" name="isActive" type="checkbox" checked /> Tratamento ativo</label>
             </div>
@@ -130,7 +130,7 @@
         <div class="history-panel__header"><div><p class="eyebrow">Configuração</p><h2 id="treatments-title">Tratamentos</h2></div><p class="records-count" id="treatments-count"></p></div>
         <p class="empty-history" id="empty-treatments">Nenhum tratamento cadastrado.</p>
         <div class="table-wrapper" id="treatments-wrapper" hidden>
-          <table><thead><tr><th>Medicamento</th><th>Dosagem</th><th>Horários</th><th>Período</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="treatments-body"></tbody></table>
+          <table><thead><tr><th>Medicamento</th><th>Dosagem</th><th>Horários</th><th>Período</th><th>Fixo</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="treatments-body"></tbody></table>
         </div>
       </section>
         </main>

@@ -74,7 +74,7 @@ firstDoseTime.addEventListener("input", updateComputedTimes);
 
 function formData() {
   const { frequency, ...data } = Object.fromEntries(new FormData(form).entries());
-  return { ...data, times: data.times.split(",").map((time) => time.trim()).filter(Boolean), patientId, isActive: form.elements.isActive.checked };
+  return { ...data, times: data.times.split(",").map((time) => time.trim()).filter(Boolean), patientId, isActive: form.elements.isActive.checked, isFixed: form.elements.isFixed.checked };
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
@@ -92,7 +92,9 @@ function renderTreatments() {
   treatments.forEach((item) => {
     const row = document.createElement("tr");
     const actions = document.createElement("td"); actions.append(button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"), button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"));
-    row.append(cell(item.name), cell(item.dosage), cell(item.schedules.map((s) => s.time).join(", ")), cell(`${item.startDate}${item.endDate ? ` a ${item.endDate}` : " em diante"}`), cell(item.isActive ? "Ativo" : "Inativo"), actions);
+    const fixedCell = document.createElement("td");
+    fixedCell.innerHTML = item.isFixed ? `${icon("pin")}Fixo` : "Temporário";
+    row.append(cell(item.name), cell(item.dosage), cell(item.schedules.map((s) => s.time).join(", ")), cell(`${item.startDate}${item.endDate ? ` a ${item.endDate}` : " em diante"}`), fixedCell, cell(item.isActive ? "Ativo" : "Inativo"), actions);
     treatmentsBody.append(row);
   });
 }
@@ -119,6 +121,7 @@ async function loadDaily() {
 
 function finishEditing(text = "") {
   editingId = null; form.reset(); form.elements.startDate.value = localDate(); form.elements.isActive.checked = true;
+  form.elements.isFixed.checked = false;
   frequencySelect.value = "custom"; firstDoseTime.value = ""; updateComputedTimes();
   activeField.hidden = true; cancelButton.hidden = true; submitButton.textContent = "Cadastrar tratamento"; message.textContent = text;
 }
@@ -141,7 +144,8 @@ treatmentsBody.addEventListener("click", async (event) => {
     frequencySelect.value = "custom"; firstDoseTime.value = ""; updateComputedTimes();
     form.elements.times.value = item.schedules.map((s) => s.time).join(", "); form.elements.startDate.value = item.startDate;
     form.elements.endDate.value = item.endDate || ""; form.elements.instructions.value = item.instructions || "";
-    form.elements.isActive.checked = item.isActive; activeField.hidden = false; cancelButton.hidden = false;
+    form.elements.isActive.checked = item.isActive; form.elements.isFixed.checked = Boolean(item.isFixed);
+    activeField.hidden = false; cancelButton.hidden = false;
     submitButton.textContent = "Salvar alterações";
     showTab("medicamento");
   }

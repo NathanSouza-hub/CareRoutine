@@ -50,6 +50,7 @@ function validateMedication(input, editing = false) {
     times,
     patientId,
     isActive: editing ? input.isActive !== false : true,
+    isFixed: Boolean(input.isFixed),
   };
 }
 

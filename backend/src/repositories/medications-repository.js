@@ -13,6 +13,7 @@ async function getAll(patientId, userId) {
         ELSE to_char(m.end_date, 'YYYY-MM-DD')
       END AS "endDate",
       m.is_active AS "isActive",
+      m.is_fixed AS "isFixed",
       m.created_at AS "createdAt",
       m.updated_at AS "updatedAt",
       COALESCE(
@@ -43,8 +44,8 @@ async function create(medication) {
   try {
     await client.query("BEGIN");
     const result = await client.query(
-      `INSERT INTO medications (name, dosage, instructions, start_date, end_date, patient_id)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO medications (name, dosage, instructions, start_date, end_date, patient_id, is_fixed)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING id`,
       [
         medication.name,
@@ -53,6 +54,7 @@ async function create(medication) {
         medication.startDate,
         medication.endDate,
         medication.patientId,
+        medication.isFixed,
       ],
     );
     const id = result.rows[0].id;
@@ -79,8 +81,8 @@ async function update(id, medication, userId) {
     const result = await client.query(
       `UPDATE medications
        SET name = $1, dosage = $2, instructions = $3, start_date = $4,
-           end_date = $5, is_active = $6, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7 AND patient_id IN (SELECT id FROM patients WHERE user_id = $8) RETURNING id`,
+           end_date = $5, is_active = $6, is_fixed = $7, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $8 AND patient_id IN (SELECT id FROM patients WHERE user_id = $9) RETURNING id`,
       [
         medication.name,
         medication.dosage,
@@ -88,6 +90,7 @@ async function update(id, medication, userId) {
         medication.startDate,
         medication.endDate,
         medication.isActive,
+        medication.isFixed,
         id,
         userId,
       ],

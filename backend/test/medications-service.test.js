@@ -30,7 +30,18 @@ describe("medications service", () => {
     assert.deepEqual(received.times, ["08:00", "20:00"]);
     assert.equal(received.endDate, null);
     assert.equal(received.isActive, true);
+    assert.equal(received.isFixed, false);
     assert.deepEqual(result, { id: "7" });
+  });
+
+  it("marca o tratamento como fixo quando solicitado", async () => {
+    let received;
+    const service = createMedicationsService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return "4"; },
+    });
+    await service.create(validMedication({ isFixed: true }), "9");
+    assert.equal(received.isFixed, true);
   });
 
   it("rejeita cadastro para paciente de outro usuário", async () => {
