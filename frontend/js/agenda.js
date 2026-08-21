@@ -208,3 +208,7 @@ PatientContext.ready().then((id) => {
   }
   loadMonth().catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
 });
+
+LiveUpdates.connect((event) => {
+  if (event.resource === "events" && patientId) loadMonth();
+});

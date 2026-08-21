@@ -181,3 +181,7 @@ PatientContext.ready().then((id) => {
   }
   Promise.all([loadTreatments(), loadDaily()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
 });
+
+LiveUpdates.connect((event) => {
+  if (event.resource === "medications" && patientId) Promise.all([loadTreatments(), loadDaily()]);
+});

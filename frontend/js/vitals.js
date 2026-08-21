@@ -259,3 +259,7 @@ PatientContext.ready().then((id) => {
   }
   loadHistory();
 });
+
+LiveUpdates.connect((event) => {
+  if (event.resource === "vitals" && patientId) loadHistory();
+});

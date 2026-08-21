@@ -321,3 +321,10 @@ PatientContext.ready().then((id) => {
   }
   Promise.all([loadTasks(), loadVitals(), loadNotes(), loadNotifications()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
 });
+
+LiveUpdates.connect((event) => {
+  if (!patientId) return;
+  if (["routines", "medications", "events"].includes(event.resource)) loadTasks();
+  if (event.resource === "vitals") loadVitals();
+  if (event.resource === "nursing-notes") loadNotes();
+});

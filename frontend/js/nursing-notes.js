@@ -145,3 +145,7 @@ PatientContext.ready().then((id) => {
   }
   loadNotes().catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
 });
+
+LiveUpdates.connect((event) => {
+  if (event.resource === "nursing-notes" && patientId) loadNotes();
+});
