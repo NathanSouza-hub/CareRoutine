@@ -67,7 +67,7 @@ const patientsController = createPatientsController(patientsService);
 app.use("/api/patients", requireAuth, createPatientsRouter(patientsController));
 
 const eventsService = createEventsService(eventsRepository);
-const eventsController = createEventsController(eventsService);
+const eventsController = createEventsController(eventsService, changeBus);
 app.use("/api/events", requireAuth, attachProfile, createEventsRouter(eventsController));
 
 const nursingNotesService = createNursingNotesService(nursingNotesRepository);
