@@ -27,9 +27,11 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action") {
+function button(label, action, id, className = "table-action", title = label) {
   const element = document.createElement("button"); element.type = "button"; element.textContent = label;
-  element.className = className; element.dataset.action = action; element.dataset.id = id; return element;
+  element.className = className; element.dataset.action = action; element.dataset.id = id;
+  element.title = title; element.setAttribute("aria-label", title);
+  return element;
 }
 
 function formatDate(value) {
@@ -45,9 +47,9 @@ function renderPatients() {
     const row = document.createElement("tr");
     const actions = cell("");
     actions.append(
-      button("Editar", "edit", item.id),
-      button("Gerar PDF", "print", item.id),
-      button("Excluir", "delete", item.id, "table-action table-action--danger"),
+      button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"),
+      button("📄", "print", item.id, "table-action table-action--icon", "Gerar PDF"),
+      button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"),
     );
     row.append(cell(item.fullName), cell(formatDate(item.birthDate)), cell(item.isActive ? "Ativo" : "Inativo"), actions);
     patientsBody.append(row);

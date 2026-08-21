@@ -78,9 +78,11 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action") {
+function button(label, action, id, className = "table-action", title = label) {
   const element = document.createElement("button"); element.type = "button"; element.textContent = label;
-  element.className = className; element.dataset.action = action; element.dataset.id = id; return element;
+  element.className = className; element.dataset.action = action; element.dataset.id = id;
+  element.title = title; element.setAttribute("aria-label", title);
+  return element;
 }
 
 function renderTreatments() {
@@ -89,7 +91,7 @@ function renderTreatments() {
   emptyTreatments.hidden = treatments.length > 0; treatmentsWrapper.hidden = treatments.length === 0;
   treatments.forEach((item) => {
     const row = document.createElement("tr");
-    const actions = cell(""); actions.append(button("Editar", "edit", item.id), button("Excluir", "delete", item.id, "table-action table-action--danger"));
+    const actions = cell(""); actions.append(button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"), button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"));
     row.append(cell(item.name), cell(item.dosage), cell(item.schedules.map((s) => s.time).join(", ")), cell(`${item.startDate}${item.endDate ? ` a ${item.endDate}` : " em diante"}`), cell(item.isActive ? "Ativo" : "Inativo"), actions);
     treatmentsBody.append(row);
   });
@@ -103,7 +105,13 @@ async function loadDaily() {
   const labels = { pending: "Pendente", taken: "Administrado", skipped: "Ignorado" };
   doses.forEach((dose) => {
     const row = document.createElement("tr"); const actions = cell("");
-    actions.append(button("Administrado", "taken", dose.scheduleId), button("Ignorado", "skipped", dose.scheduleId));
+    [
+      { emoji: "✅", action: "taken", title: "Administrado", doneClass: "table-action--done" },
+      { emoji: "❌", action: "skipped", title: "Ignorado", doneClass: "table-action--skipped" },
+    ].forEach(({ emoji, action, title, doneClass }) => {
+      const doseButton = button(emoji, action, dose.scheduleId, `table-action table-action--icon${dose.status === action ? ` ${doneClass}` : ""}`, title);
+      actions.append(doseButton);
+    });
     actions.dataset.medicationId = dose.medicationId;
     row.append(cell(dose.time), cell(dose.name), cell(dose.dosage), cell(labels[dose.status]), actions); dailyBody.append(row);
   });

@@ -5,5 +5,5 @@ const app = require("./app");
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`LoreRoutine API disponível em http://localhost:${PORT}`);
+  console.log(`Lory's Care API disponível em http://localhost:${PORT}`);
 });

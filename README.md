@@ -1,4 +1,4 @@
-# LoreRoutine
+# Lory's Care
 
 Aplicação para centralizar e simplificar a organização da rotina diária de
 cuidados de uma pessoa idosa.

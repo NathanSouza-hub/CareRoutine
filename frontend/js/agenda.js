@@ -37,9 +37,11 @@ function formData() {
 }
 
 function cell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
-function button(label, action, id, className = "table-action") {
+function button(label, action, id, className = "table-action", title = label) {
   const element = document.createElement("button"); element.type = "button"; element.textContent = label;
-  element.className = className; element.dataset.action = action; element.dataset.id = id; return element;
+  element.className = className; element.dataset.action = action; element.dataset.id = id;
+  element.title = title; element.setAttribute("aria-label", title);
+  return element;
 }
 
 function daysInMonth(year, month) { return new Date(year, month + 1, 0).getDate(); }
@@ -99,8 +101,8 @@ function renderDaily() {
     actions.append(
       button("Concluir", "completed", item.id),
       button("Não realizado", "skipped", item.id),
-      button("Editar", "edit", item.id),
-      button("Excluir", "delete", item.id, "table-action table-action--danger"),
+      button("✏️", "edit", item.id, "table-action table-action--icon", "Editar"),
+      button("🗑️", "delete", item.id, "table-action table-action--danger", "Excluir"),
     );
     row.append(cell(item.eventTime), cell(item.title), cell(item.category), cell(STATUS_LABELS[item.status]), actions);
     dailyBody.append(row);

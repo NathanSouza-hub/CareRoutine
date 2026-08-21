@@ -69,7 +69,7 @@ app.use("/api/nursing-notes", requireAuth, createNursingNotesRouter(nursingNotes
 app.get("/health", (request, response) => {
   response.status(200).json({
     status: "ok",
-    service: "LoreRoutine API",
+    service: "Lory's Care API",
   });
 });
 

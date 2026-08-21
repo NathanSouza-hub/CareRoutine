@@ -1,7 +1,7 @@
 {
   "name": "loreroutine-backend",
   "version": "1.0.0",
-  "description": "API do LoreRoutine",
+  "description": "API do Lory's Care",
   "private": true,
   "main": "src/server.js",
   "scripts": {

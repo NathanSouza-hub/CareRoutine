@@ -49,7 +49,7 @@ async function render() {
       filters.shift ? `turno ${filters.shift}` : "",
     ].filter(Boolean).join(" · ");
 
-    document.title = `Histórico de ${patient.fullName} | LoreRoutine`;
+    document.title = `Histórico de ${patient.fullName} | Lory's Care`;
     document.querySelector("#sheet-name").textContent = `Histórico de sinais vitais — ${patient.fullName}`;
     document.querySelector("#sheet-subtitle").textContent =
       `${filteredRecords.length} registro(s)${rangeLabel ? ` · ${rangeLabel}` : ""} · Emitido em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(new Date())}`;
