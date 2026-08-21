@@ -59,7 +59,7 @@ const medicationsController = createMedicationsController(medicationsService, ch
 app.use("/api/medications", requireAuth, attachProfile, createMedicationsRouter(medicationsController));
 
 const routinesService = createRoutinesService(routinesRepository);
-const routinesController = createRoutinesController(routinesService);
+const routinesController = createRoutinesController(routinesService, changeBus);
 app.use("/api/routines", requireAuth, attachProfile, createRoutinesRouter(routinesController));
 
 const patientsService = createPatientsService(patientsRepository);

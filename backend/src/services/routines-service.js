@@ -63,7 +63,7 @@ function createRoutinesService(repository) {
     validateId(patientId, "patientId");
     return repository.getDaily(date, patientId, userId);
   }
-  async function setCompletion(id, input, userId) {
+  async function setCompletion(id, input, userId, profileId) {
     validateId(id);
     const details = {};
     const date = typeof input.date === "string" ? input.date : "";
@@ -72,7 +72,11 @@ function createRoutinesService(repository) {
     if (!new Set(["completed", "skipped"]).has(status)) details.status = "Status inválido";
     if (Object.keys(details).length) throw new RoutineValidationError(details);
     if (!(await repository.existsOnDate(id, date, userId))) throw new RoutineNotFoundError("Atividade não encontrada nesta data");
-    return repository.setCompletion({ routineId: id, date, status, completedAt: status === "completed" ? new Date() : null });
+    return repository.setCompletion({
+      routineId: id, date, status,
+      completedAt: status === "completed" ? new Date() : null,
+      authorProfileId: profileId ?? null,
+    });
   }
   return Object.freeze({ create, getAll, getDaily, remove, setCompletion, update });
 }
