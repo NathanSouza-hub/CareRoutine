@@ -3,11 +3,14 @@ const todayList = document.querySelector("#today-list");
 const todayEmpty = document.querySelector("#today-empty");
 const vitalsList = document.querySelector("#vitals-today-list");
 const vitalsEmpty = document.querySelector("#vitals-today-empty");
+const notesList = document.querySelector("#notes-today-list");
+const notesEmpty = document.querySelector("#notes-today-empty");
 const tasksDate = document.querySelector("#tasks-date");
 const dashboardTitle = document.querySelector("#dashboard-title");
 const tabButtons = document.querySelectorAll("[data-tab]");
 const tabAgenda = document.querySelector("#tab-agenda");
 const tabVitais = document.querySelector("#tab-vitais");
+const tabAnotacoes = document.querySelector("#tab-anotacoes");
 const notifications = document.querySelector("#notifications");
 const notificationsButton = document.querySelector("#notifications-button");
 const notificationsBadge = document.querySelector("#notifications-badge");
@@ -28,6 +31,7 @@ let selectedDate = today;
 function showTab(name) {
   tabAgenda.hidden = name !== "agenda";
   tabVitais.hidden = name !== "vitais";
+  tabAnotacoes.hidden = name !== "anotacoes";
   tabButtons.forEach((btn) => btn.classList.toggle("tab-button--active", btn.dataset.tab === name));
 }
 
@@ -97,6 +101,28 @@ function vitalRow(record) {
   return row;
 }
 
+function noteRow(note) {
+  const row = document.createElement("li");
+  row.className = `today-item${note.isHighlighted ? " highlighted-row" : ""}`;
+
+  const time = document.createElement("span");
+  time.className = "today-item__time";
+  time.textContent = note.noteTime;
+
+  const info = document.createElement("div");
+  info.className = "today-item__info";
+  const title = document.createElement("p");
+  title.className = "today-item__title";
+  title.textContent = note.isHighlighted ? `🖊️ ${note.authorName}` : note.authorName;
+  const subtitle = document.createElement("p");
+  subtitle.className = "today-item__subtitle";
+  subtitle.textContent = `${note.shift} · ${note.noteText}`;
+  info.append(title, subtitle);
+
+  row.append(time, info);
+  return row;
+}
+
 async function loadTasks() {
   const [activities, doses, dailyEvents] = await Promise.all([
     RoutinesRepository.getDaily(selectedDate, patientId),
@@ -160,6 +186,14 @@ async function loadVitals() {
   dateRecords.forEach((record) => vitalsList.append(vitalRow(record)));
 }
 
+async function loadNotes() {
+  const dateNotes = await NursingNotesRepository.getAll(patientId, { date: selectedDate });
+  notesEmpty.textContent = selectedDate === today ? "Nenhuma anotação registrada hoje." : "Nenhuma anotação registrada nesta data.";
+  notesList.replaceChildren();
+  notesEmpty.hidden = dateNotes.length > 0;
+  dateNotes.forEach((note) => notesList.append(noteRow(note)));
+}
+
 function daysUntilLabel(dateValue) {
   const diff = Math.round((new Date(`${dateValue}T00:00:00`) - new Date(`${today}T00:00:00`)) / 86400000);
   if (diff <= 0) return "Hoje";
@@ -217,7 +251,7 @@ todayList.addEventListener("click", async (event) => {
 
 tasksDate.addEventListener("change", () => {
   selectedDate = tasksDate.value || today;
-  Promise.all([loadTasks(), loadVitals()]).catch((error) => { message.textContent = error.message; });
+  Promise.all([loadTasks(), loadVitals(), loadNotes()]).catch((error) => { message.textContent = error.message; });
 });
 
 tabButtons.forEach((btn) => btn.addEventListener("click", () => showTab(btn.dataset.tab)));
@@ -237,5 +271,5 @@ PatientContext.ready().then((id) => {
     tasksDate.disabled = true;
     return;
   }
-  Promise.all([loadTasks(), loadVitals(), loadNotifications()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
+  Promise.all([loadTasks(), loadVitals(), loadNotes(), loadNotifications()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
 });

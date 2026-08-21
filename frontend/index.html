@@ -21,6 +21,7 @@
           <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
           <a class="nav-link" href="medicamentos.html">Medicamentos</a>
           <a class="nav-link" href="atividades.html">Atividades</a>
+          <a class="nav-link" href="anotacoes-enfermagem.html">Anotações enfermagem</a>
           <a class="nav-link" href="agenda.html">Agenda</a>
           <a class="nav-link" href="historico.html">Histórico</a>
         </nav>
@@ -56,6 +57,7 @@
             <div class="tabs" role="tablist">
               <button class="tab-button" id="tab-button-agenda" type="button" data-tab="agenda">Agenda do dia</button>
               <button class="tab-button" id="tab-button-vitais" type="button" data-tab="vitais">Sinais vitais</button>
+              <button class="tab-button" id="tab-button-anotacoes" type="button" data-tab="anotacoes">Anotações enfermagem</button>
             </div>
 
             <section class="today-panel" id="tab-agenda" aria-labelledby="today-title">
@@ -75,6 +77,15 @@
               <p class="empty-history" id="vitals-today-empty">Nenhum sinal vital registrado hoje.</p>
               <ul class="today-list" id="vitals-today-list"></ul>
             </section>
+
+            <section class="today-panel" id="tab-anotacoes" aria-labelledby="notes-today-title" hidden>
+              <div class="history-panel__header">
+                <div><p class="eyebrow">Anotações enfermagem</p><h2 id="notes-today-title">Evolução de hoje</h2></div>
+                <a class="back-link" href="anotacoes-enfermagem.html">Registrar →</a>
+              </div>
+              <p class="empty-history" id="notes-today-empty">Nenhuma anotação registrada hoje.</p>
+              <ul class="today-list" id="notes-today-list"></ul>
+            </section>
           </div>
         </main>
 
@@ -90,6 +101,7 @@
     <script src="js/medications-repository.js"></script>
     <script src="js/vitals-repository.js"></script>
     <script src="js/events-repository.js"></script>
+    <script src="js/nursing-notes-repository.js"></script>
     <script src="js/dashboard.js"></script>
   </body>
 </html>

@@ -17,6 +17,10 @@ const createEventsController = require("./controllers/events-controller");
 const eventsRepository = require("./repositories/events-repository");
 const createEventsRouter = require("./routes/events-routes");
 const createEventsService = require("./services/events-service");
+const createNursingNotesController = require("./controllers/nursing-notes-controller");
+const nursingNotesRepository = require("./repositories/nursing-notes-repository");
+const createNursingNotesRouter = require("./routes/nursing-notes-routes");
+const createNursingNotesService = require("./services/nursing-notes-service");
 const createPatientsController = require("./controllers/patients-controller");
 const patientsRepository = require("./repositories/patients-repository");
 const createPatientsRouter = require("./routes/patients-routes");
@@ -57,6 +61,10 @@ app.use("/api/patients", requireAuth, createPatientsRouter(patientsController));
 const eventsService = createEventsService(eventsRepository);
 const eventsController = createEventsController(eventsService);
 app.use("/api/events", requireAuth, createEventsRouter(eventsController));
+
+const nursingNotesService = createNursingNotesService(nursingNotesRepository);
+const nursingNotesController = createNursingNotesController(nursingNotesService);
+app.use("/api/nursing-notes", requireAuth, createNursingNotesRouter(nursingNotesController));
 
 app.get("/health", (request, response) => {
   response.status(200).json({

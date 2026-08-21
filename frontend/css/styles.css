@@ -807,6 +807,26 @@ footer p {
   overflow-x: auto;
 }
 
+.table-cell--wrap {
+  white-space: normal;
+  min-width: 220px;
+  max-width: 420px;
+}
+
+.highlighted-row {
+  background: #fdf3d8;
+}
+
+.highlighted-row td {
+  border-bottom-color: #f0dfa0;
+}
+
+.today-item.highlighted-row {
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 8px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

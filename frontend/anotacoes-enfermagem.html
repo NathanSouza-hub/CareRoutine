@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Anotações de enfermagem e evolução de plantão no LoreRoutine." />
+    <title>Anotações de enfermagem | LoreRoutine</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <a class="brand" href="index.html">Lore<span>Routine</span></a>
+          <button class="sidebar-toggle-button" id="sidebar-toggle-button" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <select class="patient-switcher" id="patient-switcher" aria-label="Selecionar paciente"></select>
+        <nav class="sidebar__nav">
+          <a class="nav-link" href="index.html">Dashboard</a>
+          <a class="nav-link" href="pacientes.html">Paciente</a>
+          <a class="nav-link" href="sinais-vitais.html">Sinais vitais</a>
+          <a class="nav-link" href="medicamentos.html">Medicamentos</a>
+          <a class="nav-link" href="atividades.html">Atividades</a>
+          <a class="nav-link nav-link--active" href="anotacoes-enfermagem.html">Anotações enfermagem</a>
+          <a class="nav-link" href="agenda.html">Agenda</a>
+          <a class="nav-link" href="historico.html">Histórico</a>
+        </nav>
+        <p class="sidebar__user" id="sidebar-user"></p>
+      </aside>
+
+      <div class="main-area">
+        <header class="topbar"><div class="container topbar__content"><p class="current-date" id="current-date"></p><div class="account-menu" id="account-menu"></div></div></header>
+
+        <main class="main-content container">
+          <section class="page-header">
+            <h1>Anotações de enfermagem</h1>
+            <p>Registre a evolução de plantão: quem atendeu, quando e o que foi observado.</p>
+          </section>
+
+          <div class="tabs" role="tablist">
+            <button class="tab-button" id="tab-button-nova" type="button" data-tab="nova">Nova anotação</button>
+            <button class="tab-button" id="tab-button-cadastradas" type="button" data-tab="cadastradas">Anotações registradas</button>
+          </div>
+
+          <section class="form-panel" id="tab-nova" aria-labelledby="form-title">
+            <h2 id="form-title">Nova anotação</h2>
+            <form id="note-form">
+              <div class="form-grid">
+                <div class="form-field"><label for="note-date">Data</label><input id="note-date" name="noteDate" type="date" required /></div>
+                <div class="form-field"><label for="note-time">Horário</label><input id="note-time" name="noteTime" type="time" required /></div>
+                <div class="form-field">
+                  <label for="shift">Plantão/turno</label>
+                  <select id="shift" name="shift" required>
+                    <option value="">Selecione</option>
+                    <option value="Manhã">Manhã</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noite">Noite</option>
+                    <option value="Madrugada">Madrugada</option>
+                  </select>
+                </div>
+                <div class="form-field"><label for="author-name">Funcionário</label><input id="author-name" name="authorName" maxlength="120" placeholder="Nome de quem fez a evolução" required /></div>
+                <div class="form-field form-field--full"><label for="note-text">Evolução</label><textarea id="note-text" name="noteText" maxlength="2000" placeholder="Descreva a evolução do plantão" required></textarea></div>
+                <div class="form-field"><label><input id="is-highlighted" name="isHighlighted" type="checkbox" /> Grifar (marcar como importante)</label></div>
+              </div>
+              <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Registrar anotação</button><button class="secondary-button" id="cancel-button" type="button" hidden>Cancelar edição</button><p class="form-message" id="form-message" aria-live="polite"></p></div>
+            </form>
+          </section>
+
+          <section class="history-panel" id="tab-cadastradas" aria-labelledby="notes-title" hidden>
+            <div class="history-panel__header"><div><p class="eyebrow">Evolução de plantão</p><h2 id="notes-title">Anotações registradas</h2></div><p class="records-count" id="notes-count"></p></div>
+
+            <form class="history-filters" id="notes-filters">
+              <div class="form-field"><label for="filter-date">Dia</label><input id="filter-date" name="date" type="date" /></div>
+              <div class="form-field">
+                <label for="filter-shift">Plantão/turno</label>
+                <select id="filter-shift" name="shift">
+                  <option value="">Todos</option>
+                  <option value="Manhã">Manhã</option>
+                  <option value="Tarde">Tarde</option>
+                  <option value="Noite">Noite</option>
+                  <option value="Madrugada">Madrugada</option>
+                </select>
+              </div>
+              <button class="secondary-button" id="clear-filters-button" type="button">Limpar filtros</button>
+            </form>
+
+            <p class="empty-history" id="empty-notes">Nenhuma anotação registrada.</p>
+            <div class="table-wrapper" id="notes-wrapper" hidden>
+              <table>
+                <thead><tr><th>Data e hora</th><th>Plantão</th><th>Funcionário</th><th>Evolução</th><th>Ações</th></tr></thead>
+                <tbody id="notes-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+        <footer><div class="container"><p>LoreRoutine — apoio para o cuidado cotidiano.</p></div></footer>
+      </div>
+    </div>
+    <script src="js/auth-context.js"></script>
+    <script src="js/account-menu.js"></script>
+    <script src="js/sidebar-toggle.js"></script>
+    <script src="js/patient-context.js"></script>
+    <script src="js/nursing-notes-repository.js"></script>
+    <script src="js/nursing-notes.js"></script>
+  </body>
+</html>
