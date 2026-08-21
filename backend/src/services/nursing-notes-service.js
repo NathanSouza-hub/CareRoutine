@@ -21,24 +21,22 @@ function validateNote(input, editing = false) {
   const noteDate = typeof input.noteDate === "string" ? input.noteDate : "";
   const noteTime = typeof input.noteTime === "string" ? input.noteTime.trim() : "";
   const shift = typeof input.shift === "string" ? input.shift.trim() : "";
-  const authorName = typeof input.authorName === "string" ? input.authorName.trim() : "";
   const noteText = typeof input.noteText === "string" ? input.noteText.trim() : "";
   const patientId = input.patientId;
 
   if (!isDate(noteDate)) details.noteDate = "Informe uma data válida";
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(noteTime)) details.noteTime = "Informe um horário válido";
   if (!VALID_SHIFTS.has(shift)) details.shift = "Informe um turno válido";
-  if (!authorName || authorName.length > 120) details.authorName = "Informe o cuidador com até 120 caracteres";
   if (!noteText || noteText.length > 2000) details.noteText = "Informe o texto da evolução com até 2000 caracteres";
   if (!editing && !/^\d+$/.test(String(patientId ?? ""))) details.patientId = "Selecione um paciente";
   if (Object.keys(details).length) throw new NursingNoteValidationError(details);
 
-  return { noteDate, noteTime, shift, authorName, noteText, patientId, isHighlighted: Boolean(input.isHighlighted) };
+  return { noteDate, noteTime, shift, noteText, patientId, isHighlighted: Boolean(input.isHighlighted) };
 }
 
 function createNursingNotesService(repository) {
-  async function create(input, userId) {
-    const note = validateNote(input ?? {});
+  async function create(input, userId, profileId) {
+    const note = { ...validateNote(input ?? {}), authorName: null, authorProfileId: profileId ?? null };
     if (!(await repository.patientBelongsToUser(note.patientId, userId))) {
       throw new NursingNoteValidationError({ patientId: "Paciente não encontrado" });
     }
