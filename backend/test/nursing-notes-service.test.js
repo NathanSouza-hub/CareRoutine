@@ -51,9 +51,14 @@ describe("nursing notes service", () => {
     await assert.rejects(service.create(validNote({ noteText: "" })), NursingNoteValidationError);
   });
 
-  it("rejeita cuidador não informado", async () => {
-    const service = createNursingNotesService({ create: async () => assert.fail() });
-    await assert.rejects(service.create(validNote({ authorName: "" })), NursingNoteValidationError);
+  it("grava o profileId de quem fez a anotacao", async () => {
+    let received;
+    const service = createNursingNotesService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return "7"; },
+    });
+    await service.create(validNote(), "9", "4");
+    assert.equal(received.authorProfileId, "4");
   });
 
   it("informa quando a anotação não existe ao atualizar", async () => {

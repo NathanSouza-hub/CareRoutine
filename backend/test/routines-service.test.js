@@ -30,6 +30,16 @@ describe("routines service", () => {
     assert.equal(received.isFixed, true);
   });
 
+  it("inclui o profileId de quem concluiu a atividade", async () => {
+    let received;
+    const service = createRoutinesService({
+      existsOnDate: async () => true,
+      async setCompletion(data) { received = data; return { id: "1" }; },
+    });
+    await service.setCompletion("3", { date: "2026-08-18", status: "completed" }, "9", "4");
+    assert.equal(received.authorProfileId, "4");
+  });
+
   it("rejeita cadastro para paciente de outro usuário", async () => {
     const service = createRoutinesService({
       patientBelongsToUser: async () => false,

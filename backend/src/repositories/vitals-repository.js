@@ -11,16 +11,23 @@ const RETURNING_FIELDS = `
   temperature::FLOAT AS temperature,
   blood_glucose AS "bloodGlucose",
   notes,
+  author_profile_id AS "authorProfileId",
   created_at AS "createdAt",
   updated_at AS "updatedAt"
 `;
 
 async function getAll(patientId, userId) {
   const result = await pool.query(`
-    SELECT ${RETURNING_FIELDS}
-    FROM vital_signs
-    WHERE patient_id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2)
-    ORDER BY measured_at DESC
+    SELECT v.id, v.measured_at AS "measuredAt", v.shift,
+      v.systolic_pressure AS "systolicPressure", v.diastolic_pressure AS "diastolicPressure",
+      v.heart_rate AS "heartRate", v.oxygen_saturation AS "oxygenSaturation",
+      v.temperature::FLOAT AS temperature, v.blood_glucose AS "bloodGlucose", v.notes,
+      v.author_profile_id AS "authorProfileId", cp.name AS "authorProfileName",
+      v.created_at AS "createdAt", v.updated_at AS "updatedAt"
+    FROM vital_signs v
+    LEFT JOIN caregiver_profiles cp ON cp.id = v.author_profile_id
+    WHERE v.patient_id = $1 AND v.patient_id IN (SELECT id FROM patients WHERE user_id = $2)
+    ORDER BY v.measured_at DESC
   `, [patientId, userId]);
 
   return result.rows;
@@ -43,9 +50,10 @@ async function create(vitalSigns) {
       temperature,
       blood_glucose,
       notes,
-      patient_id
+      patient_id,
+      author_profile_id
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING ${RETURNING_FIELDS}
   `;
   const values = [
@@ -59,6 +67,7 @@ async function create(vitalSigns) {
     vitalSigns.bloodGlucose,
     vitalSigns.notes,
     vitalSigns.patientId,
+    vitalSigns.authorProfileId,
   ];
 
   const result = await pool.query(query, values);

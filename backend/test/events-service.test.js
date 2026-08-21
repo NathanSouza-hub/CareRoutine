@@ -20,6 +20,25 @@ describe("events service", () => {
     assert.equal(received.category, "Consulta médica");
   });
 
+  it("inclui o profileId de quem criou o evento", async () => {
+    let received;
+    const service = createEventsService({
+      patientBelongsToUser: async () => true,
+      async create(data) { received = data; return { id: "1" }; },
+    });
+    await service.create(validEvent(), "9", "4");
+    assert.equal(received.authorProfileId, "4");
+  });
+
+  it("inclui o profileId de quem marcou o status", async () => {
+    let receivedProfileId;
+    const service = createEventsService({
+      async setStatus(id, status, userId, profileId) { receivedProfileId = profileId; return { id }; },
+    });
+    await service.setStatus("3", { status: "completed" }, "9", "4");
+    assert.equal(receivedProfileId, "4");
+  });
+
   it("rejeita cadastro para paciente de outro usuário", async () => {
     const service = createEventsService({
       patientBelongsToUser: async () => false,

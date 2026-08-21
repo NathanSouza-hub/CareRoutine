@@ -24,7 +24,7 @@ function createResponse() {
 describe("vitals controller", () => {
   it("retorna 201 com o registro criado", async () => {
     const record = { id: "1" };
-    const controller = createVitalsController({ create: async () => record });
+    const controller = createVitalsController({ create: async () => record }, { publish: () => {} });
     const response = createResponse();
 
     await controller.create({ body: {} }, response, assert.fail);
@@ -39,7 +39,7 @@ describe("vitals controller", () => {
       create: async () => {
         throw validationError;
       },
-    });
+    }, { publish: () => {} });
     const response = createResponse();
 
     await controller.create({ body: {} }, response, assert.fail);
@@ -57,7 +57,7 @@ describe("vitals controller", () => {
       create: async () => {
         throw unexpectedError;
       },
-    });
+    }, { publish: () => {} });
     const response = createResponse();
     let forwardedError;
 
@@ -71,7 +71,7 @@ describe("vitals controller", () => {
 
   it("retorna 200 com a lista de registros", async () => {
     const records = [{ id: "1" }];
-    const controller = createVitalsController({ getAll: async () => records });
+    const controller = createVitalsController({ getAll: async () => records }, { publish: () => {} });
     const response = createResponse();
 
     await controller.getAll({ query: { patientId: "1" } }, response, assert.fail);
@@ -86,7 +86,7 @@ describe("vitals controller", () => {
       getAll: async () => {
         throw validationError;
       },
-    });
+    }, { publish: () => {} });
     const response = createResponse();
 
     await controller.getAll({ query: {} }, response, assert.fail);
@@ -100,7 +100,7 @@ describe("vitals controller", () => {
 
   it("retorna 200 com o registro atualizado", async () => {
     const record = { id: "1", heartRate: 80 };
-    const controller = createVitalsController({ update: async () => record });
+    const controller = createVitalsController({ update: async () => record }, { publish: () => {} });
     const response = createResponse();
 
     await controller.update({ params: { id: "1" }, body: {} }, response, assert.fail);
@@ -110,7 +110,7 @@ describe("vitals controller", () => {
   });
 
   it("retorna 204 ao remover o registro", async () => {
-    const controller = createVitalsController({ remove: async () => undefined });
+    const controller = createVitalsController({ remove: async () => undefined }, { publish: () => {} });
     const response = createResponse();
 
     await controller.remove({ params: { id: "1" } }, response, assert.fail);
@@ -124,7 +124,7 @@ describe("vitals controller", () => {
       update: async () => {
         throw new (require("../src/errors/not-found-error"))();
       },
-    });
+    }, { publish: () => {} });
     const response = createResponse();
 
     await controller.update({ params: { id: "999" }, body: {} }, response, assert.fail);

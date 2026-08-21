@@ -79,8 +79,14 @@ function taskRow(item) {
   info.className = "today-item__info";
   const title = document.createElement("p");
   title.className = "today-item__title";
-  if (item.isFixed) title.innerHTML = `${icon("pin")}${item.title}`;
-  else title.textContent = item.title;
+  const titleText = item.isFixed ? `${icon("pin")}${item.title}` : item.title;
+  title.innerHTML = titleText;
+  if (item.authorName) {
+    const author = document.createElement("span");
+    author.className = "today-item__author";
+    author.textContent = ` · ${item.authorName}`;
+    title.append(author);
+  }
   const subtitle = document.createElement("p");
   subtitle.className = "today-item__subtitle";
   subtitle.textContent = item.subtitle;
@@ -172,6 +178,7 @@ async function loadTasks() {
       subtitle: `Atividade · ${activity.category}`,
       status: activity.status,
       isFixed: activity.isFixed,
+      authorName: activity.authorProfileName,
       doneLabel: "Concluir",
       doneStatus: "completed",
       skipLabel: "Não realizada",
@@ -185,6 +192,7 @@ async function loadTasks() {
       title: dose.name,
       subtitle: `Medicamento · ${dose.dosage}`,
       status: dose.status,
+      authorName: dose.authorProfileName,
       doneLabel: "Administrado",
       doneStatus: "taken",
       skipLabel: "Ignorado",
@@ -197,6 +205,7 @@ async function loadTasks() {
       title: eventItem.title,
       subtitle: `Evento${eventItem.category ? ` · ${eventItem.category}` : ""}`,
       status: eventItem.status,
+      authorName: eventItem.completedByProfileName,
       doneLabel: "Concluir",
       doneStatus: "completed",
       skipLabel: "Não realizado",
@@ -320,4 +329,11 @@ PatientContext.ready().then((id) => {
     return;
   }
   Promise.all([loadTasks(), loadVitals(), loadNotes(), loadNotifications()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
+});
+
+LiveUpdates.connect((event) => {
+  if (!patientId) return;
+  if (["routines", "medications", "events"].includes(event.resource)) loadTasks();
+  if (event.resource === "vitals") loadVitals();
+  if (event.resource === "nursing-notes") loadNotes();
 });

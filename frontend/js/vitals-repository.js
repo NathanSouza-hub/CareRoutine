@@ -25,6 +25,7 @@ const VitalsRepository = (() => {
       temperature: record.temperature ?? "",
       bloodGlucose: record.bloodGlucose ?? "",
       notes: record.notes ?? "",
+      authorProfileName: record.authorProfileName ?? "",
     };
   }
 

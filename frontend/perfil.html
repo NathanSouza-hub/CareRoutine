@@ -52,6 +52,7 @@
             <button class="tab-button" id="tab-button-senha" type="button" data-tab="senha">Mudar senha</button>
             <button class="tab-button" id="tab-button-info" type="button" data-tab="info">Informações adicionais</button>
             <button class="tab-button" id="tab-button-foto" type="button" data-tab="foto">Foto</button>
+            <button class="tab-button" id="tab-button-cuidadores" type="button" data-tab="cuidadores">Cuidadores</button>
           </div>
 
           <section class="form-panel" id="tab-cadastro" aria-labelledby="cadastro-title" hidden>
@@ -99,11 +100,36 @@
             </div>
             <p class="form-message" id="avatar-message" aria-live="polite"></p>
           </section>
+
+          <section class="form-panel" id="tab-cuidadores" aria-labelledby="cuidadores-title" hidden>
+            <h2 id="cuidadores-title">Cuidadores</h2>
+            <form id="caregiver-form">
+              <div class="form-grid">
+                <div class="form-field"><label for="caregiver-name">Nome</label><input id="caregiver-name" name="name" maxlength="80" required /></div>
+                <div class="form-field form-field--full">
+                  <label>Cor do avatar</label>
+                  <div class="profile-color-picker" id="color-picker"></div>
+                  <input type="hidden" id="caregiver-color" name="avatarColor" required />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="primary-button" id="caregiver-submit" type="submit">Adicionar cuidador</button>
+                <button class="secondary-button" id="caregiver-cancel" type="button" hidden>Cancelar edição</button>
+                <p class="form-message" id="caregiver-message" aria-live="polite"></p>
+              </div>
+            </form>
+            <div class="table-wrapper" id="caregivers-wrapper" hidden>
+              <table><thead><tr><th>Nome</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="caregivers-body"></tbody></table>
+            </div>
+            <p class="empty-history" id="empty-caregivers">Nenhum cuidador cadastrado.</p>
+          </section>
         </main>
         <footer><div class="container"><p><span class="footer-heart"></span>Lory's Care — apoio para o cuidado cotidiano.</p></div></footer>
       </div>
     </div>
     <script src="js/auth-context.js"></script>
+    <script src="js/caregiver-profiles-repository.js"></script>
+    <script src="js/caregiver-context.js"></script>
     <script src="js/icons.js"></script>
     <script src="js/ui-icons.js"></script>
     <script src="js/account-menu.js"></script>

@@ -2,14 +2,18 @@ const pool = require("../config/database");
 
 async function getAll(patientId, userId, { start, end } = {}) {
   const result = await pool.query(`
-    SELECT id, title, category, to_char(event_date, 'YYYY-MM-DD') AS "eventDate",
-      to_char(event_time, 'HH24:MI') AS "eventTime", notes, status,
-      completed_at AS "completedAt"
-    FROM events
-    WHERE patient_id = $1 AND patient_id IN (SELECT id FROM patients WHERE user_id = $2)
-      AND ($3::date IS NULL OR event_date >= $3)
-      AND ($4::date IS NULL OR event_date <= $4)
-    ORDER BY event_date, event_time, title`,
+    SELECT e.id, e.title, e.category, to_char(e.event_date, 'YYYY-MM-DD') AS "eventDate",
+      to_char(e.event_time, 'HH24:MI') AS "eventTime", e.notes, e.status,
+      e.completed_at AS "completedAt",
+      e.author_profile_id AS "authorProfileId", author.name AS "authorProfileName",
+      e.completed_by_profile_id AS "completedByProfileId", completer.name AS "completedByProfileName"
+    FROM events e
+    LEFT JOIN caregiver_profiles author ON author.id = e.author_profile_id
+    LEFT JOIN caregiver_profiles completer ON completer.id = e.completed_by_profile_id
+    WHERE e.patient_id = $1 AND e.patient_id IN (SELECT id FROM patients WHERE user_id = $2)
+      AND ($3::date IS NULL OR e.event_date >= $3)
+      AND ($4::date IS NULL OR e.event_date <= $4)
+    ORDER BY e.event_date, e.event_time, e.title`,
     [patientId, userId, start || null, end || null]);
   return result.rows;
 }
@@ -21,9 +25,9 @@ async function patientBelongsToUser(patientId, userId) {
 
 async function create(event) {
   const result = await pool.query(
-    `INSERT INTO events (title, category, event_date, event_time, notes, patient_id)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-    [event.title, event.category, event.eventDate, event.eventTime, event.notes, event.patientId],
+    `INSERT INTO events (title, category, event_date, event_time, notes, patient_id, author_profile_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+    [event.title, event.category, event.eventDate, event.eventTime, event.notes, event.patientId, event.authorProfileId],
   );
   return result.rows[0].id;
 }
@@ -48,11 +52,13 @@ async function remove(id, userId) {
 
 async function getDaily(date, patientId, userId) {
   const result = await pool.query(
-    `SELECT id, title, category, to_char(event_time, 'HH24:MI') AS time, notes, status
-     FROM events
-     WHERE event_date = $1 AND patient_id = $2
-       AND patient_id IN (SELECT id FROM patients WHERE user_id = $3)
-     ORDER BY event_time, title`,
+    `SELECT e.id, e.title, e.category, to_char(e.event_time, 'HH24:MI') AS time, e.notes, e.status,
+       e.completed_by_profile_id AS "completedByProfileId", cp.name AS "completedByProfileName"
+     FROM events e
+     LEFT JOIN caregiver_profiles cp ON cp.id = e.completed_by_profile_id
+     WHERE e.event_date = $1 AND e.patient_id = $2
+       AND e.patient_id IN (SELECT id FROM patients WHERE user_id = $3)
+     ORDER BY e.event_time, e.title`,
     [date, patientId, userId],
   );
   return result.rows;
@@ -72,12 +78,12 @@ async function getUpcoming(patientId, userId, days) {
   return result.rows;
 }
 
-async function setStatus(id, status, userId) {
+async function setStatus(id, status, userId, profileId) {
   const result = await pool.query(
-    `UPDATE events SET status = $1, completed_at = $2, updated_at = CURRENT_TIMESTAMP
-     WHERE id = $3 AND patient_id IN (SELECT id FROM patients WHERE user_id = $4)
-     RETURNING id, status, completed_at AS "completedAt"`,
-    [status, status === "completed" ? new Date() : null, id, userId],
+    `UPDATE events SET status = $1, completed_at = $2, completed_by_profile_id = $3, updated_at = CURRENT_TIMESTAMP
+     WHERE id = $4 AND patient_id IN (SELECT id FROM patients WHERE user_id = $5)
+     RETURNING id, status, completed_at AS "completedAt", completed_by_profile_id AS "completedByProfileId"`,
+    [status, status === "completed" ? new Date() : null, profileId, id, userId],
   );
   return result.rows[0];
 }

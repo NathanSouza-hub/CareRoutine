@@ -136,11 +136,13 @@ async function getDaily(date, patientId, userId) {
        m.id AS "medicationId", m.name, m.dosage, m.instructions,
        s.id AS "scheduleId", to_char(s.scheduled_time, 'HH24:MI') AS time,
        COALESCE(a.status, 'pending') AS status,
-       a.administered_at AS "administeredAt", a.notes
+       a.administered_at AS "administeredAt", a.notes,
+       a.author_profile_id AS "authorProfileId", cp.name AS "authorProfileName"
      FROM medications m
      JOIN medication_schedules s ON s.medication_id = m.id AND s.is_active = TRUE
      LEFT JOIN medication_administrations a
        ON a.schedule_id = s.id AND a.scheduled_date = $1
+     LEFT JOIN caregiver_profiles cp ON cp.id = a.author_profile_id
      WHERE m.is_active = TRUE
        AND m.start_date <= $1
        AND (m.end_date IS NULL OR m.end_date >= $1)
@@ -166,15 +168,16 @@ async function scheduleBelongsToMedication(medicationId, scheduleId, userId) {
 async function setAdministration(data) {
   const result = await pool.query(
     `INSERT INTO medication_administrations
-       (schedule_id, scheduled_date, status, administered_at, notes)
-     VALUES ($1, $2, $3, $4, $5)
+       (schedule_id, scheduled_date, status, administered_at, notes, author_profile_id)
+     VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (schedule_id, scheduled_date) DO UPDATE SET
        status = EXCLUDED.status,
        administered_at = EXCLUDED.administered_at,
        notes = EXCLUDED.notes,
+       author_profile_id = EXCLUDED.author_profile_id,
        updated_at = CURRENT_TIMESTAMP
-     RETURNING id, status, administered_at AS "administeredAt", notes`,
-    [data.scheduleId, data.date, data.status, data.administeredAt, data.notes],
+     RETURNING id, status, administered_at AS "administeredAt", notes, author_profile_id AS "authorProfileId"`,
+    [data.scheduleId, data.date, data.status, data.administeredAt, data.notes, data.authorProfileId],
   );
   return result.rows[0];
 }

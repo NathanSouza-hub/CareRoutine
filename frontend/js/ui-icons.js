@@ -42,7 +42,7 @@
 
   const avatarEl = document.querySelector("#sidebar-user-avatar");
   const nameEl = document.querySelector("#sidebar-user-name");
-  if (avatarEl && nameEl && window.AuthContext) {
+  if (avatarEl && nameEl && typeof AuthContext !== "undefined") {
     const userName = AuthContext.getUserName();
     nameEl.textContent = userName;
     const avatar = AuthContext.getAvatar();
@@ -54,6 +54,26 @@
       avatarEl.append(img);
     } else {
       avatarEl.textContent = initials(userName);
+    }
+  }
+
+  const roleEl = document.querySelector(".sidebar-user-card__role");
+  if (roleEl && typeof CaregiverContext !== "undefined") {
+    const profileName = CaregiverContext.getCurrentName();
+    roleEl.replaceChildren();
+    const label = document.createElement("span");
+    label.textContent = profileName || "Cuidador";
+    roleEl.append(label);
+    if (profileName) {
+      const switchLink = document.createElement("button");
+      switchLink.type = "button";
+      switchLink.className = "sidebar-user-card__switch";
+      switchLink.textContent = "Trocar";
+      switchLink.addEventListener("click", () => {
+        CaregiverContext.clearCurrent();
+        location.href = "perfis.html";
+      });
+      roleEl.append(document.createTextNode(" · "), switchLink);
     }
   }
 })();

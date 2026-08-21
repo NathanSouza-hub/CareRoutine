@@ -39,8 +39,8 @@ function createEventsService(repository) {
     validateId(patientId, "patientId");
     return repository.getAll(patientId, userId, range);
   }
-  async function create(input, userId) {
-    const event = validateEvent(input ?? {});
+  async function create(input, userId, profileId) {
+    const event = { ...validateEvent(input ?? {}), authorProfileId: profileId ?? null };
     if (!(await repository.patientBelongsToUser(event.patientId, userId))) {
       throw new EventValidationError({ patientId: "Paciente não encontrado" });
     }
@@ -67,11 +67,11 @@ function createEventsService(repository) {
     }
     return repository.getUpcoming(patientId, userId, parsedDays);
   }
-  async function setStatus(id, input, userId) {
+  async function setStatus(id, input, userId, profileId) {
     validateId(id);
     const status = input.status;
     if (!new Set(["completed", "skipped"]).has(status)) throw new EventValidationError({ status: "Status inválido" });
-    const result = await repository.setStatus(id, status, userId);
+    const result = await repository.setStatus(id, status, userId, profileId ?? null);
     if (!result) throw new EventNotFoundError();
     return result;
   }

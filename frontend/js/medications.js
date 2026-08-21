@@ -115,7 +115,7 @@ async function loadDaily() {
       actions.append(doseButton);
     });
     actions.dataset.medicationId = dose.medicationId;
-    row.append(cell(dose.time), cell(dose.name), cell(dose.dosage), cell(labels[dose.status]), actions); dailyBody.append(row);
+    row.append(cell(dose.time), cell(dose.name), cell(dose.dosage), cell(labels[dose.status]), cell(dose.authorProfileName), actions); dailyBody.append(row);
   });
 }
 
@@ -180,4 +180,8 @@ PatientContext.ready().then((id) => {
     return;
   }
   Promise.all([loadTreatments(), loadDaily()]).catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
+});
+
+LiveUpdates.connect((event) => {
+  if (event.resource === "medications" && patientId) Promise.all([loadTreatments(), loadDaily()]);
 });

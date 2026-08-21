@@ -68,7 +68,6 @@
                     <option value="Madrugada">Madrugada</option>
                   </select>
                 </div>
-                <div class="form-field"><label for="author-name">Cuidador</label><input id="author-name" name="authorName" maxlength="120" placeholder="Nome de quem fez a evolução" required /></div>
                 <div class="form-field form-field--full"><label for="note-text">Evolução</label><textarea id="note-text" name="noteText" maxlength="2000" placeholder="Descreva a evolução do plantão" required></textarea></div>
               </div>
               <div class="form-actions"><button class="primary-button" id="submit-button" type="submit">Registrar anotação</button><button class="secondary-button" id="cancel-button" type="button" hidden>Cancelar edição</button><p class="form-message" id="form-message" aria-live="polite"></p></div>
@@ -106,11 +105,14 @@
       </div>
     </div>
     <script src="js/auth-context.js"></script>
+    <script src="js/caregiver-profiles-repository.js"></script>
+    <script src="js/caregiver-context.js"></script>
     <script src="js/icons.js"></script>
     <script src="js/ui-icons.js"></script>
     <script src="js/account-menu.js"></script>
     <script src="js/sidebar-toggle.js"></script>
     <script src="js/patient-context.js"></script>
+    <script src="js/live-updates.js"></script>
     <script src="js/nursing-notes-repository.js"></script>
     <script src="js/nursing-notes.js"></script>
   </body>

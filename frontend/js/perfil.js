@@ -4,6 +4,7 @@ const tabSections = {
   senha: document.querySelector("#tab-senha"),
   info: document.querySelector("#tab-info"),
   foto: document.querySelector("#tab-foto"),
+  cuidadores: document.querySelector("#tab-cuidadores"),
 };
 
 const profileForm = document.querySelector("#profile-form");
@@ -152,5 +153,110 @@ document.querySelector("#current-date").textContent = new Intl.DateTimeFormat("p
 
 const initialTab = new URLSearchParams(location.search).get("tab");
 showTab(tabSections[initialTab] ? initialTab : "cadastro");
+
+const AVATAR_COLORS = ["#176B87", "#4CAF78", "#C0562F", "#6F4E9C", "#A13F5C", "#2F8F9C", "#E0A526", "#3F6B4A"];
+const caregiverForm = document.querySelector("#caregiver-form");
+const caregiverMessage = document.querySelector("#caregiver-message");
+const caregiverSubmit = document.querySelector("#caregiver-submit");
+const caregiverCancel = document.querySelector("#caregiver-cancel");
+const caregiverColorInput = document.querySelector("#caregiver-color");
+const colorPicker = document.querySelector("#color-picker");
+const caregiversBody = document.querySelector("#caregivers-body");
+const caregiversWrapper = document.querySelector("#caregivers-wrapper");
+const emptyCaregivers = document.querySelector("#empty-caregivers");
+let caregivers = [];
+let editingCaregiverId = null;
+
+AVATAR_COLORS.forEach((color) => {
+  const swatch = document.createElement("button");
+  swatch.type = "button";
+  swatch.className = "profile-color-picker__swatch";
+  swatch.style.background = color;
+  swatch.dataset.color = color;
+  swatch.addEventListener("click", () => {
+    caregiverColorInput.value = color;
+    colorPicker.querySelectorAll(".profile-color-picker__swatch").forEach((el) => {
+      el.classList.toggle("profile-color-picker__swatch--selected", el.dataset.color === color);
+    });
+  });
+  colorPicker.append(swatch);
+});
+
+function caregiverCell(value) { const element = document.createElement("td"); element.textContent = value || "—"; return element; }
+
+function renderCaregivers() {
+  caregiversBody.replaceChildren();
+  emptyCaregivers.hidden = caregivers.length > 0;
+  caregiversWrapper.hidden = caregivers.length === 0;
+  caregivers.forEach((item) => {
+    const row = document.createElement("tr");
+    const actions = document.createElement("td");
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "table-action table-action--icon";
+    editButton.innerHTML = icon("pencil");
+    editButton.title = "Editar";
+    editButton.addEventListener("click", () => {
+      editingCaregiverId = String(item.id);
+      caregiverForm.elements.name.value = item.name;
+      caregiverColorInput.value = item.avatarColor;
+      colorPicker.querySelectorAll(".profile-color-picker__swatch").forEach((el) => {
+        el.classList.toggle("profile-color-picker__swatch--selected", el.dataset.color === item.avatarColor);
+      });
+      caregiverCancel.hidden = false;
+      caregiverSubmit.textContent = "Salvar alterações";
+    });
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "table-action table-action--icon table-action--danger";
+    deleteButton.innerHTML = icon("trash");
+    deleteButton.title = "Excluir";
+    deleteButton.addEventListener("click", async () => {
+      if (!window.confirm("Remover este cuidador? O histórico de registros dele é mantido.")) return;
+      try { await CaregiverProfilesRepository.remove(item.id); await loadCaregivers(); }
+      catch (error) { caregiverMessage.textContent = error.message; }
+    });
+    actions.append(editButton, deleteButton);
+    row.append(caregiverCell(item.name), caregiverCell(item.isActive ? "Ativo" : "Inativo"), actions);
+    caregiversBody.append(row);
+  });
+}
+
+async function loadCaregivers() {
+  caregivers = await CaregiverProfilesRepository.getAll();
+  renderCaregivers();
+}
+
+function finishCaregiverEditing(text = "") {
+  editingCaregiverId = null;
+  caregiverForm.reset();
+  caregiverColorInput.value = "";
+  colorPicker.querySelectorAll(".profile-color-picker__swatch").forEach((el) => el.classList.remove("profile-color-picker__swatch--selected"));
+  caregiverCancel.hidden = true;
+  caregiverSubmit.textContent = "Adicionar cuidador";
+  caregiverMessage.textContent = text;
+}
+
+caregiverForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!caregiverColorInput.value) { caregiverMessage.textContent = "Escolha uma cor de avatar."; return; }
+  caregiverSubmit.disabled = true;
+  caregiverMessage.textContent = "Salvando...";
+  try {
+    const data = Object.fromEntries(new FormData(caregiverForm).entries());
+    if (editingCaregiverId) await CaregiverProfilesRepository.update(editingCaregiverId, data);
+    else await CaregiverProfilesRepository.create(data);
+    finishCaregiverEditing(editingCaregiverId ? "Cuidador atualizado." : "Cuidador adicionado.");
+    await loadCaregivers();
+  } catch (error) {
+    caregiverMessage.textContent = error.message;
+  } finally {
+    caregiverSubmit.disabled = false;
+  }
+});
+
+caregiverCancel.addEventListener("click", () => finishCaregiverEditing());
+
+loadCaregivers().catch((error) => { caregiverMessage.textContent = error.message; });
 
 loadProfile().catch((error) => { profileMessage.textContent = `${error.message}. Verifique se a API está ativa.`; });

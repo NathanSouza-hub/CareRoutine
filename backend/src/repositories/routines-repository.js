@@ -47,9 +47,11 @@ async function remove(id, userId) {
 async function getDaily(date, patientId, userId) {
   const result = await pool.query(
     `SELECT r.id, r.title, r.category, to_char(r.scheduled_time, 'HH24:MI') AS time,
-      r.notes, r.is_fixed AS "isFixed", COALESCE(c.status, 'pending') AS status, c.completed_at AS "completedAt"
+      r.notes, r.is_fixed AS "isFixed", COALESCE(c.status, 'pending') AS status, c.completed_at AS "completedAt",
+      c.author_profile_id AS "authorProfileId", cp.name AS "authorProfileName"
      FROM routines r
      LEFT JOIN routine_completions c ON c.routine_id = r.id AND c.scheduled_date = $1
+     LEFT JOIN caregiver_profiles cp ON cp.id = c.author_profile_id
      WHERE r.is_active = TRUE AND r.start_date <= $1
        AND r.patient_id = $2
        AND r.patient_id IN (SELECT id FROM patients WHERE user_id = $3)
@@ -70,12 +72,13 @@ async function existsOnDate(id, date, userId) {
 
 async function setCompletion(data) {
   const result = await pool.query(
-    `INSERT INTO routine_completions (routine_id, scheduled_date, status, completed_at)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO routine_completions (routine_id, scheduled_date, status, completed_at, author_profile_id)
+     VALUES ($1, $2, $3, $4, $5)
      ON CONFLICT (routine_id, scheduled_date) DO UPDATE SET status = EXCLUDED.status,
-       completed_at = EXCLUDED.completed_at, updated_at = CURRENT_TIMESTAMP
-     RETURNING id, status, completed_at AS "completedAt"`,
-    [data.routineId, data.date, data.status, data.completedAt],
+       completed_at = EXCLUDED.completed_at, author_profile_id = EXCLUDED.author_profile_id,
+       updated_at = CURRENT_TIMESTAMP
+     RETURNING id, status, completed_at AS "completedAt", author_profile_id AS "authorProfileId"`,
+    [data.routineId, data.date, data.status, data.completedAt, data.authorProfileId],
   );
   return result.rows[0];
 }

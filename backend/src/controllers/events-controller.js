@@ -7,7 +7,7 @@ function handle(error, response, next) {
   else next(error);
 }
 
-function createEventsController(service) {
+function createEventsController(service, changeBus) {
   const action = (callback) => async (request, response, next) => {
     try { await callback(request, response); } catch (error) { handle(error, response, next); }
   };
@@ -18,14 +18,30 @@ function createEventsController(service) {
         end: request.query.end,
       }),
     })),
-    create: action(async (request, response) => response.status(201).json({ data: await service.create(request.body, request.userId) })),
-    update: action(async (request, response) => { await service.update(request.params.id, request.body, request.userId); response.status(204).send(); }),
-    remove: action(async (request, response) => { await service.remove(request.params.id, request.userId); response.status(204).send(); }),
+    create: action(async (request, response) => {
+      const data = await service.create(request.body, request.userId, request.profileId);
+      changeBus.publish(request.userId, { resource: "events", action: "created" });
+      response.status(201).json({ data });
+    }),
+    update: action(async (request, response) => {
+      await service.update(request.params.id, request.body, request.userId);
+      changeBus.publish(request.userId, { resource: "events", action: "updated" });
+      response.status(204).send();
+    }),
+    remove: action(async (request, response) => {
+      await service.remove(request.params.id, request.userId);
+      changeBus.publish(request.userId, { resource: "events", action: "removed" });
+      response.status(204).send();
+    }),
     getDaily: action(async (request, response) => response.json({ data: await service.getDaily(request.query.date, request.query.patientId, request.userId) })),
     getUpcoming: action(async (request, response) => response.json({
       data: await service.getUpcoming(request.query.patientId, request.userId, request.query.days || "3"),
     })),
-    setStatus: action(async (request, response) => response.json({ data: await service.setStatus(request.params.id, request.body, request.userId) })),
+    setStatus: action(async (request, response) => {
+      const data = await service.setStatus(request.params.id, request.body, request.userId, request.profileId);
+      changeBus.publish(request.userId, { resource: "events", action: "status-updated" });
+      response.json({ data });
+    }),
   });
 }
 

@@ -86,6 +86,16 @@ describe("medications service", () => {
     await assert.rejects(service.getDaily("18/08/2026", "1"), MedicationValidationError);
   });
 
+  it("inclui o profileId de quem administrou a dose", async () => {
+    let received;
+    const service = createMedicationsService({
+      scheduleBelongsToMedication: async () => true,
+      async setAdministration(data) { received = data; return { id: "1" }; },
+    });
+    await service.setAdministration("3", "5", { date: "2026-08-18", status: "taken" }, "9", "4");
+    assert.equal(received.authorProfileId, "4");
+  });
+
   it("registra uma dose tomada no horário pertencente ao medicamento", async () => {
     let received;
     const service = createMedicationsService({

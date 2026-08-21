@@ -112,8 +112,8 @@ function createVitalsService(repository) {
     }
   }
 
-  async function create(input, userId) {
-    const vitalSigns = validateAndMap(input ?? {});
+  async function create(input, userId, profileId) {
+    const vitalSigns = { ...validateAndMap(input ?? {}), authorProfileId: profileId ?? null };
     if (!(await repository.patientBelongsToUser(vitalSigns.patientId, userId))) {
       throw new ValidationError({ patientId: "Paciente não encontrado" });
     }

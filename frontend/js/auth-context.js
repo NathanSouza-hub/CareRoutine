@@ -31,7 +31,10 @@ const AuthContext = (() => {
 
   function authHeader() {
     const token = getToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const profileId = localStorage.getItem("loreroutine:profileId");
+    if (profileId) headers["X-Profile-Id"] = profileId;
+    return headers;
   }
 
   function logout() {
@@ -39,6 +42,9 @@ const AuthContext = (() => {
     localStorage.removeItem(USER_STORAGE_KEY);
     localStorage.removeItem(AVATAR_STORAGE_KEY);
     localStorage.removeItem("loreroutine:patientId");
+    localStorage.removeItem("loreroutine:profileId");
+    localStorage.removeItem("loreroutine:profileName");
+    localStorage.removeItem("loreroutine:profileColor");
     location.href = "login.html";
   }
 

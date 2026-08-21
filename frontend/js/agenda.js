@@ -104,7 +104,7 @@ function renderDaily() {
       button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
       button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"),
     );
-    row.append(cell(item.eventTime), cell(item.title), cell(item.category), cell(STATUS_LABELS[item.status]), actions);
+    row.append(cell(item.eventTime), cell(item.title), cell(item.category), cell(STATUS_LABELS[item.status]), cell(item.completedByProfileName), actions);
     dailyBody.append(row);
   });
 }
@@ -207,4 +207,8 @@ PatientContext.ready().then((id) => {
     return;
   }
   loadMonth().catch((error) => { message.textContent = `${error.message}. Verifique se a API está ativa.`; });
+});
+
+LiveUpdates.connect((event) => {
+  if (event.resource === "events" && patientId) loadMonth();
 });
