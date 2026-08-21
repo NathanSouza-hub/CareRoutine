@@ -115,7 +115,7 @@ async function loadDaily() {
       actions.append(doseButton);
     });
     actions.dataset.medicationId = dose.medicationId;
-    row.append(cell(dose.time), cell(dose.name), cell(dose.dosage), cell(labels[dose.status]), actions); dailyBody.append(row);
+    row.append(cell(dose.time), cell(dose.name), cell(dose.dosage), cell(labels[dose.status]), cell(dose.authorProfileName), actions); dailyBody.append(row);
   });
 }
 
