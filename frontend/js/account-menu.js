@@ -68,7 +68,7 @@
   });
 
   name.textContent = AuthContext.getUserName();
-  if (window.CaregiverContext && CaregiverContext.getCurrentName()) {
+  if (typeof CaregiverContext !== "undefined" && CaregiverContext.getCurrentName()) {
     const activeProfile = document.createElement("p");
     activeProfile.className = "account-menu__profile";
     activeProfile.textContent = `Cuidador ativo: ${CaregiverContext.getCurrentName()}`;
