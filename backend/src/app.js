@@ -30,8 +30,10 @@ const usersRepository = require("./repositories/users-repository");
 const createAuthRouter = require("./routes/auth-routes");
 const createAuthService = require("./services/auth-service");
 const createRequireAuth = require("./middleware/require-auth");
+const createChangeBus = require("./realtime/change-bus");
 
 const app = express();
+const changeBus = createChangeBus();
 
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
@@ -65,6 +67,27 @@ app.use("/api/events", requireAuth, createEventsRouter(eventsController));
 const nursingNotesService = createNursingNotesService(nursingNotesRepository);
 const nursingNotesController = createNursingNotesController(nursingNotesService);
 app.use("/api/nursing-notes", requireAuth, createNursingNotesRouter(nursingNotesController));
+
+app.get("/api/stream", (request, response) => {
+  let userId;
+  try {
+    ({ userId } = authService.verifyToken(request.query.token));
+  } catch (error) {
+    response.status(401).end();
+    return;
+  }
+
+  response.set({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+  response.flushHeaders();
+  response.write("retry: 3000\n\n");
+
+  changeBus.subscribe(userId, response);
+  request.on("close", () => changeBus.unsubscribe(userId, response));
+});
 
 app.get("/health", (request, response) => {
   response.status(200).json({
@@ -101,3 +124,4 @@ app.use((error, request, response, next) => {
 });
 
 module.exports = app;
+module.exports.changeBus = changeBus;
