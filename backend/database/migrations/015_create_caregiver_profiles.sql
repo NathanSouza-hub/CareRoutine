@@ -1,0 +1,17 @@
+SET client_encoding TO 'UTF8';
+
+BEGIN;
+
+CREATE TABLE caregiver_profiles (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(80) NOT NULL,
+  avatar_color VARCHAR(20) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_caregiver_profiles_user_id ON caregiver_profiles (user_id);
+
+COMMIT;
