@@ -104,7 +104,7 @@ function renderDaily() {
       button(icon("pencil"), "edit", item.id, "table-action table-action--icon", "Editar"),
       button(icon("trash"), "delete", item.id, "table-action table-action--icon table-action--danger", "Excluir"),
     );
-    row.append(cell(item.eventTime), cell(item.title), cell(item.category), cell(STATUS_LABELS[item.status]), actions);
+    row.append(cell(item.eventTime), cell(item.title), cell(item.category), cell(STATUS_LABELS[item.status]), cell(item.completedByProfileName), actions);
     dailyBody.append(row);
   });
 }
